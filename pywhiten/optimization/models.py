@@ -31,7 +31,7 @@ def n_model_poly(x, *params):
         out = 0
     for p in params:
         out += p * (x**power)
-        power+=1
+        power += 1
     return out
 
 def slf_noise(x, *params):

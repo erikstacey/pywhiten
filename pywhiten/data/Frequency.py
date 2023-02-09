@@ -1,4 +1,4 @@
-
+from typing import Union
 
 class Frequency:
     """
@@ -28,7 +28,18 @@ class Frequency:
         p0 : float
             The value of p when this object was initialized
     """
-    def __init__(self, f, a, p, t0, n=None):
+    def __init__(self, f:float, a:float, p:float, t0:float, n:Union[int, None]=None):
+        """
+
+        Args:
+            f (float): initial frequency
+            a (float): initial amplitude
+            p (float): initial phase
+            t0 (float): reference time for phase
+            n (int): index label
+        Returns:
+            Nothing
+        """
         self.f = f
         self.f0 = f
         self.a = a
