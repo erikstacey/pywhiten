@@ -1,18 +1,19 @@
 from setuptools import setup
 
-setup(name="phmin",
-      version="1.0.0",
-      description="A basic python package for identifying frequencies present in"
-                  " time series data based on the principles of phase dispersion minimization. ",
-      url="https://www.github.com/erikstacey/phmin",
+setup(name="pywhiten",
+      version="0.0.1",
+      description="A python package for conducting Lomb-Scargle-based prewhitening of stellar time series. ",
+      url="https://www.github.com/erikstacey/pywhiten",
       author="Erik William Stacey",
       author_email = "erik@erikstacey.com",
       license="MIT",
-      packages=["phmin"],
+      packages=["pywhiten"],
       install_requires=[
             "numpy",
             "matplotlib",
-            "scipy"
+            "scipy",
+            "astropy",
+            "lmfit"
       ],
       tests_require=["pytest"],
       zip_safe = False)
