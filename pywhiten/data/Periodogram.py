@@ -4,6 +4,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from pywhiten.optimization.models import n_model_poly, slf_noise
 
+
 class Periodogram:
     """
     Class which stores and operates on a Lomb-Scargle periodogram.
@@ -45,7 +46,7 @@ class Periodogram:
         # frequencies within this value are indistinguishable in this type of analysis
         self._resolution = 1.5 / (max(time) - min(time))
         # approximate nyquist frequency
-        self._approx_nyquist_f = len(time)/(2*(max(time)-min(time)))
+        self._approx_nyquist_f = len(time) / (2 * (max(time) - min(time)))
         if lsfreq == "auto":
             if fbounds == "auto":
                 # auto generate bounds from the resolution element to the approximate nyquist frequency.
@@ -60,7 +61,7 @@ class Periodogram:
                     op_bounds = fbounds
 
             self.lsfreq = np.linspace(op_bounds[0], op_bounds[1],
-                                      int(pts_per_res*(op_bounds[1]-op_bounds[0])/self._resolution))
+                                      int(pts_per_res * (op_bounds[1] - op_bounds[0]) / self._resolution))
         else:
             if type(fbounds) not in [list, np.ndarray]:
                 raise TypeError(f"Tried to initialize Periodogram with lsfreq of type {type(lsfreq)} (must be"
@@ -69,7 +70,7 @@ class Periodogram:
                 self.lsfreq = lsfreq
 
         # generates pseudo-power spectrum
-        lspower = LombScargle(time, data, normalization="psd").power(lsfreq)
+        lspower = LombScargle(time, data, normalization="psd").power(self.lsfreq)
         # normalizes the pseudo-power spectrum to an amplitude spectrum
         self.lsamp = 2 * (abs(lspower) / len(time)) ** 0.5
 
@@ -163,7 +164,7 @@ class Periodogram:
         lower_val_freq = self.lsfreq[center_i_freq] - bin_r
         upper_val_freq = self.lsfreq[center_i_freq] + bin_r
 
-        if lower_val_freq>self.lsfreq[trough_left_i] or upper_val_freq < self.lsfreq[trough_right_i]:
+        if lower_val_freq > self.lsfreq[trough_left_i] or upper_val_freq < self.lsfreq[trough_right_i]:
             raise AverageRadiusTooNarrow("Peak width on at least one side exceeds the specified average radius.")
 
         # don't permit target frequencies outside the range spanned by lsfreq
@@ -175,7 +176,6 @@ class Periodogram:
         # convert target frequencies to frequency indices
         lower_i_freq = self._find_index_of_freq(lower_val_freq)
         upper_i_freq = self._find_index_of_freq(upper_val_freq)
-
 
         if lower_i_freq < 0:
             lower_i_freq = 0
@@ -220,7 +220,7 @@ class Periodogram:
         Returns:
             Nothing
         """
-        p0 = np.ones(poly_order+1)
+        p0 = np.ones(poly_order + 1)
         log10_lsfreq = np.log10(self.lsfreq)
         log10_lsamp = np.log10(self.lsamp)
         p, pcov = curve_fit(f=n_model_poly, xdata=log10_lsfreq, ydata=log10_lsamp, p0=p0)
@@ -241,7 +241,7 @@ class Periodogram:
             self.fit_lopoly(5)
         logfreq = np.log10(center_val_freq)
         logval = n_model_poly(logfreq, *self._log_polypar)
-        return freq_amp / (10**logval)
+        return freq_amp / (10 ** logval)
 
     def _fit_slf(self):
         """
@@ -251,9 +251,9 @@ class Periodogram:
             Nothing
         """
         p0 = [0.5, np.mean(self.lsamp), 0.5, 0]
-        p, covar = curve_fit(slf_noise,xdata=self.lsfreq, ydata=self.lsamp, p0=p0)
+        p, covar = curve_fit(slf_noise, xdata=self.lsfreq, ydata=self.lsamp, p0=p0)
         self.slf_p = p
-        self.slf_p_err = np.array([covar[i,i] for i in range(len(p))])
+        self.slf_p_err = np.array([covar[i, i] for i in range(len(p))])
 
     def sig_slf(self, center_val_freq: Union[float, np.ndarray], freq_amp: Union[float, np.ndarray]):
         """
@@ -270,7 +270,9 @@ class Periodogram:
             self._fit_slf()
         model_at_val = slf_noise(center_val_freq, *self.slf_p)
         return freq_amp / model_at_val
-    def select_peak(self, method: str ="highest", min_prov_sig: float=3.0, mask: np.ndarray = None, cutoff:int=50):
+
+    def select_peak(self, method: str = "highest", min_prov_sig: float = 3.0, mask: np.ndarray = None,
+                    cutoff: int = 50):
         """
         Determines a frequency-amplitude pair suitable for a pre-whitening iteration. Note: 'avg' method currently not
         implemented and just returns highest.
@@ -294,8 +296,8 @@ class Periodogram:
         # set up a mask to exclude
         working_mask = np.ones(len(self.lsfreq), dtype=bool) * mask
         if method == "highest":
-            return self.highest_ampl(excl_mask = working_mask)
-        elif method =="slf":
+            return self.highest_ampl(excl_mask=working_mask)
+        elif method == "slf":
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_slf(self.lsfreq, self.lsamp) > min_prov_sig
@@ -306,17 +308,15 @@ class Periodogram:
             working_mask *= self.sig_poly(self.lsfreq, self.lsamp) > min_prov_sig
             return self.highest_ampl(excl_mask=working_mask)
         elif method == "avg":
-            return self.highest_ampl(excl_mask = working_mask)
+            return self.highest_ampl(excl_mask=working_mask)
         else:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
 
 
-
-
-
 class InvalidMethodError(Exception):
     pass
+
+
 class AverageRadiusTooNarrow(Exception):
     pass
-

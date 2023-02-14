@@ -1,0 +1,2 @@
+class InvalidContructorArgumentsError(Exception):
+    pass
