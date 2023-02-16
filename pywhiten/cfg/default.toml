@@ -1,0 +1,19 @@
+title = "pywhiten default configuration"
+
+[input]
+    flux_unit = "unknown"
+    time_unit = "unknown"
+[output]
+    [output.paths] # all paths relative to base
+    base= "."
+    pgs_base = "pgs"
+    pgs_raw = "raw" # relative to pgs_base
+    pgs_slf= "slf" # relative to pgs_base
+    pgs_box= "box" # relative to pgs_base
+    pgs_lopoly = "lopoly" # relative to pgs_base
+    lcs_base= "lcs"
+    lcs_raw= "raw"
+    lcs_sf= "sf"
+    lcs_mf= "mf"
+    lcs_data= "data"
+    auxiliary= "aux"

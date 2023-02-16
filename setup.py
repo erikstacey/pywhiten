@@ -13,7 +13,11 @@ setup(name="pywhiten",
             "matplotlib",
             "scipy",
             "astropy",
-            "lmfit"
+            "lmfit",
+            "tomli"
       ],
       tests_require=["pytest"],
-      zip_safe = False)
+      zip_safe = False,
+      include_package_data=True,
+      package_data={'': ['/cfg/default.toml']},
+      )
