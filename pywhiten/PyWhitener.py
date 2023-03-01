@@ -29,24 +29,32 @@ class PyWhitener:
                 with open(f"{os.getcwd()}/+{cfg_file}", "rb") as f:
                     loaded_cfg = tomli.load(f)
                     self.cfg = merge_dict(self.cfg, loaded_cfg)
+                self.cfg["title"] = "Config loaded from file in working directory"
             # try to find it in the cfg directory instead
             elif os.path.exists(f"{pkg_path}/cfg/{cfg_file}"):
                 with open(f"{pkg_path}/cfg/{cfg_file}", "rb") as f:
                     loaded_cfg = tomli.load(f)
                     self.cfg = merge_dict(self.cfg, loaded_cfg)
+                self.cfg["title"] = "Config loaded from file in package cfg directory"
             # finally, check to see if the cfg file was specified as a full path
             elif os.path.exists(cfg_file):
                 with open(cfg_file, "rb") as f:
                     loaded_cfg = tomli.load(f)
                     self.cfg = merge_dict(self.cfg, loaded_cfg)
+                self.cfg["title"] = "Config loaded from file at specified path"
         # use the cfg argument of the initializer to overwrite any cfg entries
         if cfg is not None and type(cfg) == dict:
             self.cfg = self.cfg = merge_dict(self.cfg, cfg)
+            self.cfg["title"] += " - Merged with runtime-specified arguments"
+        # handle special logic cases
+        pass
         # config setup done
         # now set up initial light curve, frequency container, output mgr
         self.lcs = [Lightcurve(time, data, err)]
         self.freqs = FrequencyContainer()
         self.output_manager = OutputManager(cfg = self.cfg)
+
+        # we're now ready to do some frequency analysis
 
 def merge_dict(old_dict, new_dict):
     out_dict = {}

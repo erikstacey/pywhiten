@@ -1,14 +1,29 @@
 title = "pywhiten default configuration"
 
 [input]
+    # input data axis unit. Uncertainties are assumed to be in this unit. If you are inputting data in magnitude or
+    # millimagnitude, enter "mag" or "mmag". It will be converted to a linear unit for analysis, however may be
+    # output in mmag by setting the output.plot_output_in_mmag or output.data_output_in_mmag flag to true.
     flux_unit = "unknown"
+    # input time axis unit.
     time_unit = "unknown"
+    # if the time axis is relative to some value (e.g. JD-2457000, for TESS data), set it here and it'll
+    # be corrected (added to all time axis values)
+    input_t0 = 0
+    # subtracted from the time axis prior to analysis. Useful if you want to measure your phases
+    # with respect to some time value
+    measurement_t0 = 0
+
+
 [output]
-    output_in_mmag = true
+    # if you'd like output plots in mmag, set this to true
+    plot_output_in_mmag = false
+    # if you'd like output data in mmag, set this to true (incl reported frequencies
+    data_output_in_mmag = false
     reference_flux = 0
     reference_mag = 0
     [output.paths] # all paths relative to base, except where specified
-    clean_dirs = false  # if true, cleans the output base directory
+    clean_dirs = false  # if true, cleans the output base directory. ANYTHING UNDER BASE WILL BE REMOVED.
     base= "/pw_out"
     pgs_base = "/pgs"
     pgs_raw = "/raw" # relative to pgs_base
@@ -21,3 +36,40 @@ title = "pywhiten default configuration"
     lcs_mf= "/mf"
     lcs_data= "/data"
     auxiliary= "/aux"
+
+    [plots]
+    save_periodogram_plots = true  #
+    save_lightcurve_plots = true  #
+    [plots.periodograms]
+        x_label = "Frequency [cycles/%input.time_unit%]"
+        y_label = "Amplitude [%input.data_unit%]"
+    [plots.lightcurves]
+        x_label = "Time [%input.time_unit%]"
+        y_label = "Flux [%input.data_unit%]"
+[periodograms]
+    lower_limit = "resolution"  # can be "resolution" or non-negative float
+    upper_limit = "nyquist"  # can be "nyquist" or non-negative float greater than lower_limit
+    # number of points per unit in frequency. If the time series is specified in days, [f] = [c/d]
+    points_per_unit = 50
+
+[autopw]
+    peak_selection_method = "slf"  # Can be slf, highest, bin
+    # number of frequencies to extract via highest peak before using the specified
+    # peak selection method
+    peak_selection_highest_override = 10
+    # the minimum significance for peak acceptance if using slf or bin peak_selection
+    peak_selection_cutoff_sig = 3.0
+    # maximum number of frequencies to extract regardless of achieving the termination criterion
+    cutoff_iteration = 50
+    [autopw.bounds]
+        # if phase fit is within 0.1 of the initial guess, adjust the initial guess
+        # and try again until it isn't. This should avoid help avoid local chi squared minima in phase.
+        phase_fit_rejection_criterion = 0.1
+        freq_lower_coeff = 0.8  # sets lower bound on f to f_init * freq_lower_coeff
+        freq_upper_coeff = 1.2  # sets upper bound on f to f_init * freq_upper_coeff
+        amp_lower_coeff = 0.8 # sets lower bound on amp to amp_init * amp_lower_coeff
+        amp_upper_coeff = 1.2 # sets upper bound on amp to amp_init * amp_upper_coeff
+        phase_lower = -100  # lower limit on phase values
+        phase_upper = 100 # upper limit on phase values
+
+
