@@ -44,3 +44,6 @@ class FrequencyContainer:
 
     def add_frequency(self, freq:Frequency):
         self._flist.append(freq)
+
+    def del_frequency(self, index):
+        self._flist.pop(index)

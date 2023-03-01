@@ -4,16 +4,20 @@ title = "pywhiten default configuration"
     flux_unit = "unknown"
     time_unit = "unknown"
 [output]
-    [output.paths] # all paths relative to base
-    base= "."
-    pgs_base = "pgs"
-    pgs_raw = "raw" # relative to pgs_base
-    pgs_slf= "slf" # relative to pgs_base
-    pgs_box= "box" # relative to pgs_base
-    pgs_lopoly = "lopoly" # relative to pgs_base
-    lcs_base= "lcs"
-    lcs_raw= "raw"
-    lcs_sf= "sf"
-    lcs_mf= "mf"
-    lcs_data= "data"
-    auxiliary= "aux"
+    output_in_mmag = true
+    reference_flux = 0
+    reference_mag = 0
+    [output.paths] # all paths relative to base, except where specified
+    clean_dirs = false  # if true, cleans the output base directory
+    base= "/pw_out"
+    pgs_base = "/pgs"
+    pgs_raw = "/raw" # relative to pgs_base
+    pgs_slf= "/slf" # relative to pgs_base
+    pgs_box= "/box" # relative to pgs_base
+    pgs_lopoly = "/lopoly" # relative to pgs_base
+    lcs_base= "/lcs"
+    lcs_raw= "/raw"
+    lcs_sf= "/sf"
+    lcs_mf= "/mf"
+    lcs_data= "/data"
+    auxiliary= "/aux"

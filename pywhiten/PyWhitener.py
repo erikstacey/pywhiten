@@ -1,5 +1,6 @@
 import tomli
 from pywhiten.data import *
+from pywhiten.pwio import OutputManager
 import os
 import numpy as np
 
@@ -10,9 +11,10 @@ class PyWhitener:
     lcs: list
     freqs: FrequencyContainer
     cfg: dict
+    output_manager : OutputManager
 
 
-    def __init__(self, time, data, err=None, cfg = "default"):
+    def __init__(self, time, data, err=None, cfg_file = "default", cfg = None):
 
         # using this method to load the cfg maintains backwards compatibility with python 3.7 in the least painful form
         # load default cfg, then overwrite with config file specified by cfg
@@ -21,8 +23,30 @@ class PyWhitener:
         with open(default_config, "rb") as f:
             self.cfg = tomli.load(f)
 
-        if cfg != "default":
-            pass
+        if cfg_file != "default" and type(cfg_file) == str:
+            # if specified cfg file is in current directory, use that
+            if os.path.exists(f"{os.getcwd()}/+{cfg_file}"):
+                with open(f"{os.getcwd()}/+{cfg_file}", "rb") as f:
+                    loaded_cfg = tomli.load(f)
+                    self.cfg = merge_dict(self.cfg, loaded_cfg)
+            # try to find it in the cfg directory instead
+            elif os.path.exists(f"{pkg_path}/cfg/{cfg_file}"):
+                with open(f"{pkg_path}/cfg/{cfg_file}", "rb") as f:
+                    loaded_cfg = tomli.load(f)
+                    self.cfg = merge_dict(self.cfg, loaded_cfg)
+            # finally, check to see if the cfg file was specified as a full path
+            elif os.path.exists(cfg_file):
+                with open(cfg_file, "rb") as f:
+                    loaded_cfg = tomli.load(f)
+                    self.cfg = merge_dict(self.cfg, loaded_cfg)
+        # use the cfg argument of the initializer to overwrite any cfg entries
+        if cfg is not None and type(cfg) == dict:
+            self.cfg = self.cfg = merge_dict(self.cfg, cfg)
+        # config setup done
+        # now set up initial light curve, frequency container, output mgr
+        self.lcs = [Lightcurve(time, data, err)]
+        self.freqs = FrequencyContainer()
+        self.output_manager = OutputManager(cfg = self.cfg)
 
 def merge_dict(old_dict, new_dict):
     out_dict = {}
@@ -38,28 +62,5 @@ def merge_dict(old_dict, new_dict):
 
 
 if __name__ == "__main__":
-    test_dict = {
-        "flt": 1.0,
-        "lst": [0, 1, 2],
-        "tup": (0, 1, 2),
-        "dct": {
-            "nested_flt": 1.1,
-            "nested_str": "helloworld",
-            "nested_dct": {
-                "par1": 1.2
-            }
-        }
-    }
-
-    test_dict_2 = {
-        "flt": 1.1,
-        "lst": [0, 1, 3],
-        "tup": (0, 1, 2),
-        "dct": {
-            "nested_str": "goodbyeworld",
-            "nested_dct": {
-                "par1": 1.3
-            }
-        }
-    }
-    print(merge_dict(test_dict, test_dict_2))
+    test_pywhitener = PyWhitener(np.linspace(0, 10, 100), np.random.rand(100), np.ones(100))
+    print(test_pywhitener.cfg)
