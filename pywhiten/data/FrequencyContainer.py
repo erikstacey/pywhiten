@@ -12,6 +12,7 @@ class FrequencyContainer:
             List of Frequency objects
     """
     _flist: list = []
+    n = 0
 
     def __init__(self, *freqs):
         for i in range(len(freqs)):
@@ -19,6 +20,7 @@ class FrequencyContainer:
                 raise InvalidContructorArgumentsError("FrequencyContainer initialized with at least one argument not"
                                                       "of type Frequency")
         self._flist = [*freqs]
+        self.n = len(self._flist)
 
     def get_flist(self):
         """
@@ -44,6 +46,8 @@ class FrequencyContainer:
 
     def add_frequency(self, freq:Frequency):
         self._flist.append(freq)
+        self.n += 1
 
     def del_frequency(self, index):
         self._flist.pop(index)
+        self.n -= 1

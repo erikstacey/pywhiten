@@ -16,6 +16,10 @@ title = "pywhiten default configuration"
 
 
 [output]
+    # prints messages during runtime indicating the pre-whitening progress
+    print_runtime_messages = true
+    # prints debug messages
+    print_debug_messages = true
     # if you'd like output plots in mmag, set this to true
     plot_output_in_mmag = false
     # if you'd like output data in mmag, set this to true (incl reported frequencies
@@ -54,6 +58,10 @@ title = "pywhiten default configuration"
 
 [autopw]
     peak_selection_method = "slf"  # Can be slf, highest, bin
+    # dictates how to generate new light curves in the final stage of each pre-whitening iteration. "mf" subtracts the
+    # multi-frequency fit from the original light curve, while "sf" subtracts the single-frequency model from the most
+    # recent light curve
+    new_lc_generation_method = "mf"
     # number of frequencies to extract via highest peak before using the specified
     # peak selection method
     peak_selection_highest_override = 10
@@ -71,5 +79,16 @@ title = "pywhiten default configuration"
         amp_upper_coeff = 1.2 # sets upper bound on amp to amp_init * amp_upper_coeff
         phase_lower = -100  # lower limit on phase values
         phase_upper = 100 # upper limit on phase values
+
+[optimization]
+    optimization_pkg = "lmfit" # can be lmfit, scipy || ONLY LMFIT WORKS RIGHT NOW
+    # include a constant zero point offset in multi-frequency fits
+    mf_include_zp = true
+    # warn user if multi-frequency fit values are within a factor of this of the boundaries
+    mf_boundary_warnings = 0.05
+    # Enables a check to see if phase significantly moved during single-frequency fit. If not, it's possible we're stuck
+    # in a local minimum and we should adjust our initial guess and try again
+    sf_phase_value_check = true
+
 
 
