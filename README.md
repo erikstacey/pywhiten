@@ -6,6 +6,8 @@ this package, such that it can be utilized in a more accessible fashion.
 
 Current Status (8 Mar 2023):
 
-Behaviour of pypw almost fully re-implemented. Need to add auto-prewhitening functionality. Documentation to follow.
+Core behaviour of pypw re-implemented in this package, with the exception of automatic significance and uncertainty
+evaluation. Todo: Implement automatic significance and uncertainty evaluation and autopw functionality. Documentation to
+follow.
 
-Expected completion: By 24 Mar, 2023
+Expected completion: By 17 Mar, 2023
