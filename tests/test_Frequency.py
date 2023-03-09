@@ -19,7 +19,5 @@ def test_Frequency():
     assert test_object_noidx.a0 == 1.3
     assert test_object_noidx.p0 == 0.3
 
-    test_object_noidx.prettyprint()
 
     test_object_widx = pywhiten.data.Frequency(1.2, 1.3, 0.3, 0, n=1)
-    test_object_widx.prettyprint()

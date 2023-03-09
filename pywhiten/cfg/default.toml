@@ -39,6 +39,7 @@ title = "pywhiten default configuration"
     pgs_slf= "/slf" # relative to pgs_base
     pgs_box= "/box" # relative to pgs_base
     pgs_lopoly = "/lopoly" # relative to pgs_base
+    pgs_data = "/data"
     lcs_base= "/lcs"
     lcs_raw= "/raw"
     lcs_sf= "/sf"
@@ -89,11 +90,13 @@ title = "pywhiten default configuration"
     optimization_pkg = "lmfit" # can be lmfit, scipy || ONLY LMFIT WORKS RIGHT NOW
     # include a constant zero point offset in multi-frequency fits
     mf_include_zp = true
-    # warn user if multi-frequency fit values are within a factor of this of the boundaries
+    # warn user if multi-frequency fit values are within a factor of this of the boundaries. Set to 0 to disable
     mf_boundary_warnings = 0.05
     # Enables a check to see if phase significantly moved during single-frequency fit. If not, it's possible we're stuck
     # in a local minimum and we should adjust our initial guess and try again
     sf_phase_value_check = true
+    # sets whether to use a sin or cos function for the sinusoidal model. Can be "sin" or "cos"
+    frequency_model_type = "sin"
 
 
 

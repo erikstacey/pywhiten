@@ -28,7 +28,7 @@ class Frequency:
         p0 : float
             The value of p when this object was initialized
     """
-    def __init__(self, f:float, a:float, p:float, t0:float, n:Union[int, None]=None):
+    def __init__(self, f:float, a:float, p:float, t0:float, model_function, n:Union[int, None]=None):
         """
 
         Args:
@@ -36,6 +36,9 @@ class Frequency:
             a (float): initial amplitude
             p (float): initial phase
             t0 (float): reference time for phase
+            model_function (function reference): A model function. This will typically be the model used to opimize the
+                f, a, p parameters. This is required to fully specify the meaning of f, a, p, and t0. Must be of the
+                form f(x, f, a, p)
             n (int): index label
         Returns:
             Nothing
@@ -48,6 +51,7 @@ class Frequency:
         self.p0 = p
         self.t0 = t0
         self.n = n
+        self.model_function = model_function
 
         self.sig_poly = None
         self.sig_avg = None
@@ -71,6 +75,9 @@ class Frequency:
 
         if self.p > 1 or self.p < 0:
             self.p = self.p % 1
+
+    def evaluate_model(self, x):
+        return self.model_function(x, self.f, self.a, self.p)
 
     def prettyprint(self):
         """Prints the parameters to console"""

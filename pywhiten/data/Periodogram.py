@@ -16,14 +16,20 @@ class Periodogram:
         [x0, alpha_0, gamma, Cw]. See Bowman et al. (2019) for details on these parameters.
         slf_p_err (list): List of diagonal elements of the covariance matrix for the slf noise fit. Estimates of the
             uncertainties on the parameters contained in slf_p.
-        _approx_nyquist_f (float): The nyquist frequency assuming even sampling across the time baseline. This will NOT
+        p_approx_nyquist_f (float): The nyquist frequency assuming even sampling across the time baseline. This will NOT
             be the nyquist frequency for data with gaps, but it's the best way to handle the general case
             for automatically generating periodogram boundaries
-        _resolution (float): the minimum separation necessary to reliably resolve two periodic components close in
+        p_resolution (float): the minimum separation necessary to reliably resolve two periodic components close in
             frequency using a Lomb-Scargle-based pre-whitening methodology.
-        _log_polypar (ndarray): a list of coefficients for a polynomial fit in log-log space.
+        log_polypar (ndarray): a list of coefficients for a polynomial fit in log-log space.
     """
-    _log_polypar = None
+    lsfreq = None
+    lsamp = None
+    log_polypar = None
+    slf_p = None
+    slf_p_err = None
+    p_approx_nyquist_f = None
+    p_resolution = None
 
     def __init__(self, time: np.ndarray, data: np.ndarray, lsfreq: Union[str, np.ndarray] = "auto",
                  fbounds: Union[str, tuple] = "auto", pts_per_res: int = 20):
@@ -44,15 +50,15 @@ class Periodogram:
             TypeError: If input values aren't matched to the allowable types
         """
         # frequencies within this value are indistinguishable in this type of analysis
-        self._resolution = 1.5 / (max(time) - min(time))
+        self.p_resolution = 1.5 / (max(time) - min(time))
         # approximate nyquist frequency
-        self._approx_nyquist_f = len(time) / (2 * (max(time) - min(time)))
+        self.p_approx_nyquist_f = len(time) / (2 * (max(time) - min(time)))
         if lsfreq == "auto":
             if fbounds == "auto":
                 # auto generate bounds from the resolution element to the approximate nyquist frequency.
                 # This will probably include way too much superfluous information for most use cases.
                 # That's the price of "auto".
-                op_bounds = [self._resolution, self._approx_nyquist_f]
+                op_bounds = [self.p_resolution, self.p_approx_nyquist_f]
             else:
                 if type(fbounds) not in [tuple, list, np.ndarray]:
                     raise TypeError(f"Tried to initialize Periodogram with fbounds of type {type(fbounds)} (must be"
@@ -61,7 +67,7 @@ class Periodogram:
                     op_bounds = fbounds
 
             self.lsfreq = np.linspace(op_bounds[0], op_bounds[1],
-                                      int(pts_per_res * (op_bounds[1] - op_bounds[0]) / self._resolution))
+                                      int(pts_per_res * (op_bounds[1] - op_bounds[0]) / self.p_resolution))
         else:
             if type(fbounds) not in [list, np.ndarray]:
                 raise TypeError(f"Tried to initialize Periodogram with lsfreq of type {type(lsfreq)} (must be"
@@ -213,7 +219,7 @@ class Periodogram:
     def fit_lopoly(self, poly_order: int):
         """
         Fits the periodogram with a polynomial in log-log space and stores the coefficients in the
-        attribute _log_polypar
+        attribute log_polypar
         Args:
             poly_order (int): The polynomial order to use in the model
 
@@ -224,7 +230,7 @@ class Periodogram:
         log10_lsfreq = np.log10(self.lsfreq)
         log10_lsamp = np.log10(self.lsamp)
         p, pcov = curve_fit(f=n_model_poly, xdata=log10_lsfreq, ydata=log10_lsamp, p0=p0)
-        self._log_polypar = p
+        self.log_polypar = p
 
     def sig_poly(self, center_val_freq: Union[float, np.ndarray], freq_amp: Union[float, np.ndarray]):
         """
@@ -237,10 +243,10 @@ class Periodogram:
         Returns:
             float: A measured significance for the input periodic component
         """
-        if self._log_polypar is None:
+        if self.log_polypar is None:
             self.fit_lopoly(5)
         logfreq = np.log10(center_val_freq)
-        logval = n_model_poly(logfreq, *self._log_polypar)
+        logval = n_model_poly(logfreq, *self.log_polypar)
         return freq_amp / (10 ** logval)
 
     def _fit_slf(self):
@@ -294,7 +300,9 @@ class Periodogram:
                 min_prov_sig cannot be found.
         """
         # set up a mask to exclude
-        working_mask = np.ones(len(self.lsfreq), dtype=bool) * mask
+        working_mask = np.ones(len(self.lsfreq), dtype=bool)
+        if mask is not None:
+            working_mask*=mask
         if method == "highest":
             return self.highest_ampl(excl_mask=working_mask)
         elif method == "slf":

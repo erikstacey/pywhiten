@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as pl
 from pywhiten.pwio.utilities import flux2mag, flux2mag_e, format_output
 from pywhiten.data.FrequencyContainer import FrequencyContainer
+from pywhiten.optimization.models import sin_model, cos_model, n_sin_model, n_cos_model
 
 
 class OutputManager:
@@ -30,8 +31,10 @@ class OutputManager:
                     saved
                 string misc_output: The absolute path where misc data and plots are saved
         """
-    model_x: np.ndarray
     cfg: dict
+
+    sf_func = None
+    mf_func = None
 
     output_dirs = {"base": None,
                    "pgs_base": None,
@@ -39,6 +42,7 @@ class OutputManager:
                    "pgs_slf": None,
                    "pgs_box": None,
                    "pgs_lopoly": None,
+                   "pgs_data": None,
                    "lcs_base": None,
                    "lcs_raw": None,
                    "lcs_sf": None,
@@ -58,7 +62,7 @@ class OutputManager:
             for key in ["pgs_base", "lcs_base", "auxiliary"]:
                 self.output_dirs[key] = self.output_dirs["base"] + cfg["output"]["paths"][key]
             # set up pgs directories
-            for key in ["pgs_raw", "pgs_slf", "pgs_box", "pgs_lopoly"]:
+            for key in ["pgs_raw", "pgs_slf", "pgs_box", "pgs_lopoly", "pgs_data"]:
                 self.output_dirs[key] = self.output_dirs["pgs_base"] + cfg["output"]["paths"][key]
             # set up lcs directories
             for key in ["lcs_raw", "lcs_sf", "lcs_mf", "lcs_data"]:
@@ -73,7 +77,20 @@ class OutputManager:
         for path_key in self.output_dirs:
             os.makedirs(self.output_dirs[path_key], exist_ok=True)
 
-    def save_it(self, lcs, freqs, zp):
+        self.cfg = cfg
+
+        # set the model attributes so models can be generated and plotted from the parameters
+        if self.cfg["optimization"]["frequency_model_type"] == "sin":
+            self.sf_func = sin_model
+            self.mf_func = n_sin_model
+        elif self.cfg["optimization"]["frequency_model_type"] == "cos":
+            self.sf_func = cos_model
+            self.mf_func = n_cos_model
+        else:
+            raise ValueError(f"Configuration optimization.frequency_model_type is set to"
+                             f" {self.cfg['optimization']['frequency_model_type']}, must be 'sin' or 'cos'")
+
+    def save_it(self, lcs, frequency_container, zp):
         """
         Save the results from a single iteration. This is called at the end of each iteration.
         :param lcs: Current list of light curves stored in the parent Dataset obj
@@ -81,10 +98,11 @@ class OutputManager:
         :param zp: Current floating mean adjustment stored in the parent Dataset obj
         :return: None
         """
+        freqs = frequency_container.get_flist()
         n = len(freqs) - 1
         c_lc = lcs[-1]
         c_pg = c_lc.periodogram
-        c_freq = freqs.get_flist()[-1]
+        c_freq = freqs[-1]
 
         # Save LC, PG data
         self.save_lc(c_lc, f"{self.output_dirs['lcs_data']}/lc{n}.txt")
@@ -98,16 +116,17 @@ class OutputManager:
         pl.clf()
         # sf ===========================================
         self.add_lc_plot_to_curfig(x=c_lc.time, y=c_lc.data, label="Data")
-        self.add_lc_plot_to_curfig(x=self.model_x, y=c_freq.genmodel_sf(self.model_x), color="red", label="SF Model")
+        self.add_lc_plot_to_curfig(x=lcs[0].time, y=c_freq.evaluate_model(lcs[0].time),
+                                   color="red", label="SF Model")
         self.add_lc_formatting_to_curfig(legend=True)
         pl.savefig(f"{self.output_dirs['lcs_sf']}/lc_sf{n}.png")
         pl.clf()
         # mf ===========================================
         self.add_lc_plot_to_curfig(x=lcs[0].time, y=lcs[0].data, label="Data")
-        mf_y = np.zeros(len(self.model_x)) + zp
+        mf_y = np.zeros(len(lcs[0].time)) + zp
         for freq in freqs:
-            mf_y += freq.genmodel(self.model_x)
-        self.add_lc_plot_to_curfig(x=self.model_x, y=mf_y, color="red", label="Complete Variability Model")
+            mf_y += freq.evaluate_model(lcs[0].time)
+        self.add_lc_plot_to_curfig(x=lcs[0].time, y=mf_y, color="red", label="Complete Variability Model")
         self.add_lc_formatting_to_curfig(legend=True)
         pl.savefig(f"{self.output_dirs['lcs_mf']}/lc_mf{n}.png")
         pl.clf()
@@ -130,7 +149,7 @@ class OutputManager:
             pl.savefig(f"{self.output_dirs['pgs_slf']}/pg{n}.png")
             pl.clf()
         # lopoly =======================================
-        if c_pg.polyparams_log is not None:
+        if c_pg.log_polypar is not None:
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_polyfit_model(c_pg.lsfreq), color="red",
                                        label="LOPoly Fit")
@@ -158,10 +177,10 @@ class OutputManager:
         pl.clf()
         # mf ===========================================
         self.add_lc_plot_to_curfig(x=lcs[0].time, y=lcs[0].data, label="Data")
-        mf_y = np.zeros(len(self.model_x)) + zp
+        mf_y = np.zeros(len(lcs[0].time)) + zp
         for freq in freqs:
-            mf_y += freq.genmodel(self.model_x)
-        self.add_lc_plot_to_curfig(x=self.model_x, y=mf_y, color="red", label="Complete Variability Model", linestyle="-", marker="")
+            mf_y += freq.genmodel(lcs[0].time)
+        self.add_lc_plot_to_curfig(x=lcs[0].time, y=mf_y, color="red", label="Complete Variability Model", linestyle="-", marker="")
         self.add_lc_formatting_to_curfig(legend=True)
         pl.savefig(f"{self.output_dirs['lcs_base']}/lc_mf{n}_final.png")
         pl.clf()
@@ -230,6 +249,8 @@ class OutputManager:
         :param bool legend: If true, add a legend
         :return: None
         """
+
+        #%todo: set lc formatting to properly parse label configuration
         pl.xlabel(self.cfg["output"]["fig_labels"]["lc_x_label"])
         pl.ylabel(self.cfg["output"]["fig_labels"]["lc_x_label"])
         if legend:
@@ -254,6 +275,7 @@ class OutputManager:
         :param bool legend: If true, add a legend
         :return: None
         """
+        # %todo: set pg formatting to properly parse label configuration
         pl.xlabel(self.cfg["output"]["fig_labels"]["pg_x_label"])
         pl.ylabel(self.cfg["output"]["fig_labels"]["pg_x_label"])
         if legend:

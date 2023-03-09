@@ -8,9 +8,14 @@ import numpy as np
 
 class PyWhitener:
     """
-    The main object used to conduct pre-whitening analyses.
+    The main class for conduction pre-whitening analyses using pywhiten.
     Attributes:
-        list lcs
+        lcs (list): A list of Lightcurve objects. The first entry is populated with the constructor, and subsequent
+            entries are added when pre-whitening
+        freqs (FrequencyContainer): A container of Frequency objects identified while pre-whitening
+        cfg (dict): A nested dictionary representing the configuration supplied in [package path]/cfg/default.toml,
+            or however manually specified
+        optimizer (Optimizer): A class for handling the optimization steps of the pre-whitening process
     """
     lcs: list
     freqs: FrequencyContainer
@@ -19,7 +24,19 @@ class PyWhitener:
     optimizer: Optimizer
 
     def __init__(self, time, data, err=None, cfg_file="default", cfg=None):
+        """
 
+        Args:
+            time (np.ndarray): Time series time axis
+            data (np.ndarray): Time series data axis
+            err (np.ndarray): Time series data point weights, in the form of uncertainties
+            cfg_file (string): Path to (or filename, if file is in current working directory or cfg directory) a config
+                file, which will be used to overwrite the default configuration. Does not need to be fully populated,
+                only the populated fields will overwrite.
+            cfg (dict): A nested dict which mimics the structure of the configuration file. This can also be used to
+                manually override the configuration entries. For example, to set the periodogram x labels the following
+                should return the desired value: example_dict['output']['paths']['pg_x_label']
+        """
         # using this method to load the cfg maintains backwards compatibility with python 3.7 in the least painful form
         # load default cfg, then overwrite with config file specified by cfg
         pkg_path = os.path.abspath(__file__)[:-14]
@@ -57,11 +74,25 @@ class PyWhitener:
         self.lcs = [Lightcurve(time, data, err)]
         self.freqs = FrequencyContainer()
         self.output_manager = OutputManager(cfg=self.cfg)
-        self.optimizer = Optimizer()
+        self.optimizer = Optimizer(cfg = self.cfg)
 
         # we're now ready to do some frequency analysis
 
     def id_peak(self, method, idx=-1):
+        """
+        Gets a candidate frequency/amplitude pair from a periodogram belonging to a light curve in lcs list
+        Args:
+            method (str): A method used to identify a peak. Allowed values: ['highest', 'slf', 'poly', 'avg']. Refer
+                to data.Periodogram.select_peak() for more details
+            idx (int): index in lcs list to identify a peak from
+
+        Returns:
+            All values will be None if entire periodogram is excluded from selection. This can occur if using the 'slf'
+            'poly' or 'avg' methods and no points in the periodogram meet the required minimum significance. In this
+            case, this is utilized as a signal to trigger a stop criterion when automatically pre-whitening.
+            float: candidate frequency
+            float: candidate amplitude.
+        """
         return self.lcs[idx].periodogram.select_peak(method=method,
                                                      min_prov_sig=self.cfg["autopw"]["peak_selection_cutoff_sig"])
 
@@ -85,11 +116,15 @@ class PyWhitener:
         candidate_frequency, candidate_amplitude = self.id_peak(method=peak_selection_method)
 
         # Second stage, conduct a single-frequency fit
-        sf_f, sf_a, sf_p, sf_model = self.optimizer.single_frequency_opt(self.lcs[-1].time,
+        sf_f, sf_a, sf_p, sf_model = self.optimizer.single_frequency_optimization(self.lcs[-1].time,
                                                                          self.lcs[-1].data,
                                                                          self.lcs[-1].err,
                                                                          candidate_frequency, candidate_amplitude, 0.5)
-        self.freqs.add_frequency(Frequency(f=sf_f, a=sf_a, p=sf_p, t0=self.cfg["input"]["input_t0"]))
+        self.freqs.add_frequency(Frequency(f=sf_f, a=sf_a, p=sf_p, model_function=self.optimizer.sf_func,
+                                           t0=self.cfg["input"]["input_t0"], n=len(self.freqs.get_flist())))
+        if self.cfg["output"]["print_runtime_messages"]:
+            print(f"[pywhiten] Identified single frequency model:")
+            self.freqs.get_flist()[-1].prettyprint()
 
         # Third stage, conduct the multi-frequency fit
         mf_mod = self.optimizer.multi_frequency_optimization(self.lcs[0].time,
@@ -98,6 +133,10 @@ class PyWhitener:
                                                              self.freqs.get_flist())
 
         self.output_manager.save_it(self.lcs, self.freqs, self.optimizer.c_zp)
+        if self.cfg["output"]["print_runtime_messages"]:
+            print(f"[pywhiten] Completed optimization of current complete variability model:")
+            for f_to_print in self.freqs.get_flist():
+                f_to_print.prettyprint()
 
         # Final Stage, make a new light curve and append it to the lightcurves list
         if self.cfg["autopw"]["new_lc_generation_method"] == "mf":
@@ -107,6 +146,8 @@ class PyWhitener:
             self.lcs.append(Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err))
             return True
         return False
+
+
 
 
 

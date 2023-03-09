@@ -6,7 +6,6 @@ this package, such that it can be utilized in a more accessible fashion.
 
 Current Status (8 Mar 2023):
 
-Behaviour of pypw almost fully re-implemented. Still need to add OutputManager functionality to save plots and data
-during runtime, and auto-prewhitening functionality. Documentation to follow.
+Behaviour of pypw almost fully re-implemented. Need to add auto-prewhitening functionality. Documentation to follow.
 
 Expected completion: By 24 Mar, 2023
