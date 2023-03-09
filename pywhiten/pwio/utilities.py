@@ -1,16 +1,26 @@
 import numpy as np
 
-def flux2mag(data, ref):
+def flux2mag(data, ref_flux, ref_mag):
     """ Converts a data array with reference flux ref to magnitude"""
-    return -2.5 * (np.log10(data + ref) - np.log10(ref))
+    return -2.51188643151 * np.log10(data/ref_flux) + ref_mag
 
-def flux2mag_e(data, ref, err):
-    """ Converts a data array with uncertainties and a reference flux to magnitude."""
-    mag = -2.5*(np.log10(data+ref) -np.log10(ref))
-    mag_err = abs(-2.5 * err / ((data + ref) * np.log(10)))
-    return mag, mag_err
+def flux2mag_e(data, ref_flux, ref_mag, err):
+    """ Converts a data array with reference flux ref to magnitude, including error propagation"""
+    mag = -2.51188643151 * np.log10(data/ref_flux) + ref_mag
+    err = (-2.51188643151/np.log(10))*err/data
+    return mag, err
 
 def format_output(n, e, npts):
+    """
+    Formats a measurement of the form 1.23 +/- 0.01 as 1.23(1).
+    Args:
+        n (float): a nominal value of a measurement
+        e (float): an error corresponding to the nominal value
+        npts (int): Number of digits in uncertainty to retain
+
+    Returns:
+        formatted string
+    """
     split_n = str(n).split('.')
     split_e = str(e).split('.')
     roundto = 0

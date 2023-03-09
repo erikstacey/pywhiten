@@ -49,6 +49,11 @@ class Frequency:
         self.t0 = t0
         self.n = n
 
+        self.sig_poly = None
+        self.sig_avg = None
+        self.sig_slf = None
+
+
     def update(self, f, a, p):
         """Updates the stored frequency, amplitude, and phase"""
         self.f, self.a, self.p = f, a, p

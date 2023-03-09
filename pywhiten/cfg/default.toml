@@ -26,6 +26,11 @@ title = "pywhiten default configuration"
     data_output_in_mmag = false
     reference_flux = 0
     reference_mag = 0
+    [output.fig_labels]
+    lc_y_label = "Flux [Unit Unspecified]"
+    lc_x_label = "Time [Unit Unspecified]"
+    pg_y_label = "Amplitude [Unit Unspecified]"
+    pg_x_label = "Frequency [cycles per unspecified unit]"
     [output.paths] # all paths relative to base, except where specified
     clean_dirs = false  # if true, cleans the output base directory. ANYTHING UNDER BASE WILL BE REMOVED.
     base= "/pw_out"

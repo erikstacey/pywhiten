@@ -97,7 +97,7 @@ class PyWhitener:
                                                              self.lcs[0].err,
                                                              self.freqs.get_flist())
 
-        # %todo: Populate the OutputManager with iteration saving functionality and put a "save iteration" here
+        self.output_manager.save_it(self.lcs, self.freqs, self.optimizer.c_zp)
 
         # Final Stage, make a new light curve and append it to the lightcurves list
         if self.cfg["autopw"]["new_lc_generation_method"] == "mf":
