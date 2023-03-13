@@ -1,4 +1,5 @@
 from typing import Union
+from pywhiten.optimization.models import sin_model
 
 class Frequency:
     """
@@ -6,10 +7,16 @@ class Frequency:
     Attributes:
         f : float
             Model frequency
+        sigma_f : float
+            frequency uncertainty
         a : float
             Model amplitude
+        sigma_a : float
+            amplitude uncertainty
         p : float
             Model phase
+        sigma_p : float
+            phase uncertainty
         t0 : float
             The timestamp which is used as the reference for the measurement of phase. The phase measurement is
             meaningless without this specified.
@@ -28,7 +35,21 @@ class Frequency:
         p0 : float
             The value of p when this object was initialized
     """
-    def __init__(self, f:float, a:float, p:float, t0:float, model_function, n:Union[int, None]=None):
+    f : float
+    sigma_f : float
+    a : float
+    sigma_a : float
+    p : float
+    sigma_p : float
+    t0 : float
+    sig_poly : float
+    sig_avg : float
+    sig_slf : float
+    f0 : float
+    a0 : float
+    p0 : float
+
+    def __init__(self, f:float, a:float, p:float, t0:float, model_function=sin_model, n:Union[int, None]=None):
         """
 
         Args:
@@ -38,7 +59,7 @@ class Frequency:
             t0 (float): reference time for phase
             model_function (function reference): A model function. This will typically be the model used to opimize the
                 f, a, p parameters. This is required to fully specify the meaning of f, a, p, and t0. Must be of the
-                form f(x, f, a, p)
+                form f(x, f, a, p). Defaults to sin model, as with anything else that utilizes a model of this form.
             n (int): index label
         Returns:
             Nothing

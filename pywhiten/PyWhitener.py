@@ -148,10 +148,37 @@ class PyWhitener:
         return False
 
 
+    def post_pw(self, residual_lc_idx : int = -1):
+        """
+        Conducts post-pre-whitening tasks. Principally, computes significances and parameters uncertainties for
+        frequencies
+        Args:
+            residual_lc_idx (int): The integer corresponding to the index of the residual light curve in self.lcs.
+                Defaults to -1 (the most recent LC added)
+        Returns:
+            Nothing
+        """
+        self.freqs.compute_significances(self.lcs[residual_lc_idx].periodogram)
+        self.freqs.compute_parameter_uncertainties(self.lcs[residual_lc_idx])
+
+
+
+
+
 
 
 
 def merge_dict(old_dict, new_dict):
+    """
+    Merges two dictionaries, overwriting entries in old_dict with entries in new_dict if both contain entries with the
+    same access pattern (key, or nested set of keys). Recursively merges consistutent dictionaries as well.
+    Args:
+        old_dict (dict): A possibly nested dictionary. Entries in this dictionary are overwritten in case of conflicts.
+        new_dict (dict): A possibly nested dictionary
+
+    Returns:
+        dict: the merged dictionary
+    """
     out_dict = {}
     for key in new_dict.keys():
         if key in old_dict.keys() and type(old_dict[key]) == dict:

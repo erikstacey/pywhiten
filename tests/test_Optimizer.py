@@ -46,5 +46,6 @@ def test_Optimizer_mf():
 
     test_container = FrequencyContainer(f1, f2)
     assert test_container.get_flist()[0].f == 1.1
-    model = test_Optimizer.multi_frequency_optimization(test_x, test_y, np.ones(len(test_x)), test_container)
+    model = test_Optimizer.multi_frequency_optimization(test_x, test_y, np.ones(len(test_x)),
+                                                        test_container.get_flist())
     assert test_container.get_flist()[0].f != 1.1

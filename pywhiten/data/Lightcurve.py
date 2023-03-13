@@ -1,6 +1,7 @@
 import numpy as np
 from pywhiten.data.InvalidConstructorArgumentsError import InvalidContructorArgumentsError
 from pywhiten.data.Periodogram import Periodogram
+import matplotlib.pyplot as pl
 
 class Lightcurve():
     """
@@ -60,5 +61,26 @@ class Lightcurve():
             if (self.data[i]>0 and self.data[i+1]<0) or (self.data[i]<0 and self.data[i+1] > 0):
                 sign_change_count+=1
         return sign_change_count
+
+    def std(self):
+        """
+        Get standard deviation of light curve data
+        Returns:
+            float : std of light curve data axis
+        """
+        return np.std(self.data)
+
+    def t_span(self):
+        """
+        Get the time span of the lightcurve
+        Returns:
+            float : max time value minus minimum time value
+        """
+        return max(self.time) - min(self.time)
+
+    def debug_plot(self):
+        pl.plot(self.time, self.data, linestyle=None, marker=".", color="black", markersize = 2)
+        pl.show()
+        pl.clf()
 
 

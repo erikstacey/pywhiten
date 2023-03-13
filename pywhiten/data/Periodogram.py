@@ -3,6 +3,7 @@ from typing import Union
 import numpy as np
 from scipy.optimize import curve_fit
 from pywhiten.optimization.models import n_model_poly, slf_noise
+import matplotlib.pyplot as pl
 
 
 class Periodogram:
@@ -249,7 +250,7 @@ class Periodogram:
         logval = n_model_poly(logfreq, *self.log_polypar)
         return freq_amp / (10 ** logval)
 
-    def _fit_slf(self):
+    def fit_slf(self):
         """
         Fits the periodogram with a red noise + white noise model from Bowman et al. (2019). Stores the parameters in
         the attribute slf_p, and parameter uncertainties in slf_p_err
@@ -273,7 +274,7 @@ class Periodogram:
             float: A measured significance for the input periodic component
                 """
         if self.slf_p is None:
-            self._fit_slf()
+            self.fit_slf()
         model_at_val = slf_noise(center_val_freq, *self.slf_p)
         return freq_amp / model_at_val
 
@@ -320,6 +321,10 @@ class Periodogram:
         else:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
+    def debug_plot(self):
+        pl.plot(self.lsfreq, self.lsamp, color="black")
+        pl.show()
+        pl.clf()
 
 
 class InvalidMethodError(Exception):
