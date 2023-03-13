@@ -140,9 +140,9 @@ class OutputManager:
         # slf ==========================================
         if c_pg.slf_p is not None:
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_slf_model(c_pg.lsfreq), color="red", label="SLF Fit")
+            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.eval_slf_model(c_pg.lsfreq), color="red", label="SLF Fit")
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq,
-                                       y=c_pg.get_slf_model(c_pg.lsfreq) * self.cfg["autopw"][
+                                       y=c_pg.eval_slf_model(c_pg.lsfreq) * self.cfg["autopw"][
                                            "peak_selection_cutoff_sig"],
                                        color="blue", label="Minimum Selection Amplitude", linestyle="--")
             self.add_pg_formatting_to_curfig(legend=True)
@@ -203,8 +203,9 @@ class OutputManager:
         # slf ==========================================
         if c_pg.slf_p is not None:
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_slf_model(c_pg.lsfreq), color="red", label="SLF Fit")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_slf_model(c_pg.lsfreq) * config.cutoff_sig,
+            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.eval_slf_model(c_pg.lsfreq), color="red", label="SLF Fit")
+            self.add_pg_plot_to_curfig(x=c_pg.lsfreq,
+                                       y=c_pg.eval_slf_model(c_pg.lsfreq) * self.cfg["autopw"]["peak_selection_cutoff_sig"],
                          color="blue", label="Minimum Selection Amplitude", linestyle="--")
             self.add_pg_formatting_to_curfig(legend=True)
             pl.savefig(f"{self.output_dirs['lcs_slf']}/pg{n}_final_residual.png")

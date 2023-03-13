@@ -71,7 +71,10 @@ class PyWhitener:
         pass
         # config setup done
         # now set up initial light curve, frequency container, output mgr
-        self.lcs = [Lightcurve(time, data, err)]
+        if self.cfg["input"]["subtract_mean"]:
+            self.lcs = [Lightcurve(time, data-np.mean(data), err)]
+        else:
+            self.lcs = [Lightcurve(time, data, err)]
         self.freqs = FrequencyContainer()
         self.output_manager = OutputManager(cfg=self.cfg)
         self.optimizer = Optimizer(cfg = self.cfg)
@@ -107,13 +110,25 @@ class PyWhitener:
                 one of ['highest', 'slf', 'poly', 'avg'] - see id_peak method of data.Periodogram class
 
         Returns:
-            bool: indicates pre-whitening iteration success
+            int : a flag indicating whether the PW iteration succeeded
+                0 if iteration was successful
+                1 if peak identification failed using the specified method (which is the termination criterion
+                    for autopw)
+                2 if a new lightcurve couldn't be generated. This probably happens if
+                    autopw.new_lc_generation_method is set incorrectly in cfg
         """
         if self.cfg["output"]["print_runtime_messages"]:
             print(f"[pywhiten] ITERATION {self.freqs.n + 1}")
 
         # First stage, identify a candidate frequency/amplitude from the most recent periodogram
         candidate_frequency, candidate_amplitude = self.id_peak(method=peak_selection_method)
+        if self.cfg["output"]["print_debug_messages"]:
+            print(f"[DEBUG][pywhiten] Identified candidate frequency {candidate_frequency} and"
+                  f" amplitude {candidate_amplitude} using method {peak_selection_method}")
+        if candidate_frequency is None and candidate_amplitude is None:
+            if self.cfg["output"]["print_debug_messages"]:
+                print(f"[DEBUG][pywhiten] TERMINATION CRITERION SATISFIED")
+            return 1
 
         # Second stage, conduct a single-frequency fit
         sf_f, sf_a, sf_p, sf_model = self.optimizer.single_frequency_optimization(self.lcs[-1].time,
@@ -141,11 +156,23 @@ class PyWhitener:
         # Final Stage, make a new light curve and append it to the lightcurves list
         if self.cfg["autopw"]["new_lc_generation_method"] == "mf":
             self.lcs.append(Lightcurve(self.lcs[0].time, self.lcs[0].data - mf_mod, err = self.lcs[0].err))
-            return True
+            return 0
         elif self.cfg["autopw"]["new_lc_generation_method"] == "sf":
             self.lcs.append(Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err))
-            return True
-        return False
+            return 0
+        return 2
+
+    def auto(self):
+        for i in range(self.cfg["autopw"]["cutoff_iteration"]):
+            success_flag = -1
+            if i < self.cfg["autopw"]["peak_selection_highest_override"]:
+                success_flag = self.it_pw(peak_selection_method="highest")
+            else:
+                success_flag = self.it_pw(peak_selection_method=self.cfg["autopw"]["peak_selection_method"])
+            if success_flag == 1:
+                break
+        self.post_pw()
+
 
 
     def post_pw(self, residual_lc_idx : int = -1):
@@ -160,7 +187,6 @@ class PyWhitener:
         """
         self.freqs.compute_significances(self.lcs[residual_lc_idx].periodogram)
         self.freqs.compute_parameter_uncertainties(self.lcs[residual_lc_idx])
-
 
 
 

@@ -13,6 +13,10 @@ title = "pywhiten default configuration"
     # subtracted from the time axis prior to analysis. Useful if you want to measure your phases
     # with respect to some time value
     measurement_t0 = 0
+    # set this to subtract the mean of the light curve when data is loaded. If the mean of the light curve isn't
+    # zero or very close to it, then there will be a large apparant amplitude component near 0 frequency which will
+    # probably cause problems.
+    subtract_mean = true
 
 
 [output]
@@ -69,7 +73,8 @@ title = "pywhiten default configuration"
     # recent light curve
     new_lc_generation_method = "mf"
     # number of frequencies to extract via highest peak before using the specified
-    # peak selection method
+    # peak selection method. This can be useful if your light curve has some particularly strong frequencies and you're
+    # trying to access the weaker ones.
     peak_selection_highest_override = 10
     # the minimum significance for peak acceptance if using slf or bin peak_selection
     peak_selection_cutoff_sig = 3.0

@@ -94,6 +94,11 @@ class Periodogram:
             excl_mask = np.ones(len(self.lsfreq), dtype=bool)
         filtered_lsamp = self.lsamp[excl_mask]
         filtered_lsfreq = self.lsfreq[excl_mask]
+
+        # if the exclusion mask excludes all values from selection
+        if len(filtered_lsamp) == 0:
+            return None, None
+
         ymax = np.argmax(filtered_lsamp)
         xatpeak = filtered_lsfreq[ymax]
         return xatpeak, filtered_lsamp[ymax]
@@ -275,7 +280,7 @@ class Periodogram:
                 """
         if self.slf_p is None:
             self.fit_slf()
-        model_at_val = slf_noise(center_val_freq, *self.slf_p)
+        model_at_val = self.eval_slf_model(center_val_freq)
         return freq_amp / model_at_val
 
     def select_peak(self, method: str = "highest", min_prov_sig: float = 3.0, mask: np.ndarray = None,
@@ -321,6 +326,11 @@ class Periodogram:
         else:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
+    def eval_slf_model(self, x):
+        if self.slf_p is None:
+            self.fit_slf()
+        return slf_noise(x, *self.slf_p)
+
     def debug_plot(self):
         pl.plot(self.lsfreq, self.lsamp, color="black")
         pl.show()
