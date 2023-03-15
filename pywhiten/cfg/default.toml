@@ -62,9 +62,9 @@ title = "pywhiten default configuration"
         y_label = "Flux [%input.data_unit%]"
 [periodograms]
     lower_limit = "resolution"  # can be "resolution" or non-negative float
-    upper_limit = "nyquist"  # can be "nyquist" or non-negative float greater than lower_limit
+    upper_limit = 20  # can be "nyquist" or non-negative float greater than lower_limit
     # number of points per unit in frequency. If the time series is specified in days, [f] = [c/d]
-    points_per_unit = 50
+    points_per_resolution_element = 20
 
 [autopw]
     peak_selection_method = "slf"  # Can be slf, highest, bin
@@ -77,7 +77,7 @@ title = "pywhiten default configuration"
     # trying to access the weaker ones.
     peak_selection_highest_override = 10
     # the minimum significance for peak acceptance if using slf or bin peak_selection
-    peak_selection_cutoff_sig = 3.0
+    peak_selection_cutoff_sig = 4.0
     # maximum number of frequencies to extract regardless of achieving the termination criterion
     cutoff_iteration = 50
     [autopw.bounds]

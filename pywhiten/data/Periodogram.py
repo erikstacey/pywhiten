@@ -2,6 +2,8 @@ from astropy.timeseries import LombScargle
 from typing import Union
 import numpy as np
 from scipy.optimize import curve_fit
+
+import pywhiten
 from pywhiten.optimization.models import n_model_poly, slf_noise
 import matplotlib.pyplot as pl
 
@@ -31,9 +33,12 @@ class Periodogram:
     slf_p_err = None
     p_approx_nyquist_f = None
     p_resolution = None
+    cfg = None
 
     def __init__(self, time: np.ndarray, data: np.ndarray, lsfreq: Union[str, np.ndarray] = "auto",
-                 fbounds: Union[str, tuple] = "auto", pts_per_res: int = 20):
+                 fbounds = None,
+                 pts_per_res: int = pywhiten.default_cfg["periodograms"]["points_per_resolution_element"],
+                 cfg=None):
         """
         Constructor for Periodogram class
         Args:
@@ -41,41 +46,35 @@ class Periodogram:
             data (ndarray): Data axis of time series
             lsfreq (str, ndarray): Frequency grid to compute the periodogram over. Default behaviour is "auto" which
                 automatically generates a grid. Alternatively, an array of floats may be provided directly.
-            fbounds (str, tuple): bounds for periodogram in frequency. "auto" automatically generates bounds based
-                on the frequency resolution and nyquist frequency. If fgrid is specified, removes values outside
-                the fbounds.
+            fbounds (tuple): bounds for periodogram in frequency of format (lower, upper)
             pts_per_res (int): number of points to generate per resolution element. Ignored if fgrid is provided.
+            cfg (dict): A configuration dict. If nothing is provided, the default is used.
         Returns:
             Nothing
         Raises:
             TypeError: If input values aren't matched to the allowable types
         """
+        if cfg is not None:
+            self.cfg = cfg
+        else:
+            self.cfg = pywhiten.default_cfg
         # frequencies within this value are indistinguishable in this type of analysis
         self.p_resolution = 1.5 / (max(time) - min(time))
         # approximate nyquist frequency
         self.p_approx_nyquist_f = len(time) / (2 * (max(time) - min(time)))
+
+        # set up a frequency grid. This is the most configurable component so it has a few branching paths for setup.
         if lsfreq == "auto":
-            if fbounds == "auto":
-                # auto generate bounds from the resolution element to the approximate nyquist frequency.
-                # This will probably include way too much superfluous information for most use cases.
-                # That's the price of "auto".
-                op_bounds = [self.p_resolution, self.p_approx_nyquist_f]
-            else:
-                if type(fbounds) not in [tuple, list, np.ndarray]:
-                    raise TypeError(f"Tried to initialize Periodogram with fbounds of type {type(fbounds)} (must be"
-                                    f"tuple, list, or ndarray)")
-                else:
-                    op_bounds = fbounds
-
-            self.lsfreq = np.linspace(op_bounds[0], op_bounds[1],
-                                      int(pts_per_res * (op_bounds[1] - op_bounds[0]) / self.p_resolution))
+            if fbounds is not None:  # explicitely provided bounds
+                ll, ul = fbounds[0], fbounds[1]
+            else:  # bounds not explicitely provided so they must be generated
+                ll = self.cfg["periodograms"]["lower_limit"]
+                if ll == "resolution":
+                    ll = self.p_resolution
+                ul = self.cfg["periodograms"]["upper_limit"]
+            self.lsfreq = np.linspace(ll, ul, pts_per_res * int(abs(ll-ul)/(self.p_resolution)))
         else:
-            if type(fbounds) not in [list, np.ndarray]:
-                raise TypeError(f"Tried to initialize Periodogram with lsfreq of type {type(lsfreq)} (must be"
-                                f"list or ndarray)")
-            else:
-                self.lsfreq = lsfreq
-
+            self.lsfreq = lsfreq
         # generates pseudo-power spectrum
         lspower = LombScargle(time, data, normalization="psd").power(self.lsfreq)
         # normalizes the pseudo-power spectrum to an amplitude spectrum
@@ -283,15 +282,15 @@ class Periodogram:
         model_at_val = self.eval_slf_model(center_val_freq)
         return freq_amp / model_at_val
 
-    def select_peak(self, method: str = "highest", min_prov_sig: float = 3.0, mask: np.ndarray = None,
+    def select_peak(self, method: str = "highest", min_prov_sig: float = 4.0, mask: np.ndarray = None,
                     cutoff: int = 50):
         """
         Determines a frequency-amplitude pair suitable for a pre-whitening iteration. Note: 'avg' method currently not
         implemented and just returns highest.
         Args:
-            method (string): Must be one of ['highest', 'slf', 'poly', 'avg']. 'highest' selects the frequency-amplitude
-                pair strictly according to the highest amplitude in the periodogram. Each of the 'slf', 'poly', and
-                'avg' methods impose an additional significance criterion that the highest peak must exceed, and which
+            method (string): Must be one of ['highest', 'slf', 'poly']. 'highest' selects the frequency-amplitude
+                pair strictly according to the highest amplitude in the periodogram. Each of the 'slf', 'poly',
+                 methods impose an additional significance criterion that the highest peak must exceed, and which
                 of the three chosen specifies how the significance is measured.
             min_prov_sig (float): The minimum significance that a prospective peak must exceed if using the "slf",
                 "poly", or "avg" methods.
@@ -315,13 +314,12 @@ class Periodogram:
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_slf(self.lsfreq, self.lsamp) > min_prov_sig
+            self.peak_selection_debug_plot(working_mask)
             return self.highest_ampl(excl_mask=working_mask)
         elif method == "poly":
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_poly(self.lsfreq, self.lsamp) > min_prov_sig
-            return self.highest_ampl(excl_mask=working_mask)
-        elif method == "avg":
             return self.highest_ampl(excl_mask=working_mask)
         else:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
@@ -333,6 +331,15 @@ class Periodogram:
 
     def debug_plot(self):
         pl.plot(self.lsfreq, self.lsamp, color="black")
+        pl.show()
+        pl.clf()
+    def peak_selection_debug_plot(self, working_mask):
+        pl.plot(self.lsfreq[working_mask], self.lsamp[working_mask], color="green", linestyle="none", marker=".", markersize=2)
+        pl.plot(self.lsfreq[~working_mask], self.lsamp[~working_mask], color="black", linestyle = "none", marker=".", markersize=2)
+        pl.plot(self.lsfreq, slf_noise(self.lsfreq, *self.slf_p)*3, color="red", linestyle = "--")
+        pl.plot(self.lsfreq, slf_noise(self.lsfreq, *self.slf_p), color="red")
+        pl.axhline(0)
+        pl.xlim(0, 10)
         pl.show()
         pl.clf()
 

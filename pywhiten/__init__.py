@@ -4,8 +4,16 @@ frequencies, amplitudes, and phases of sinusoidal variability signals in time se
 this program was written and validated by Erik William Stacey as a principle component of the analysis presented in
 his research thesis for his Master of Science at the Royal Military College of Canada.
 """
+import tomli
+import os
+pkg_path = os.path.abspath(__file__)[:-11]
+with open(pkg_path + "/cfg/default.toml", "rb") as f:
+    default_cfg = tomli.load(f)
 
 from pywhiten.PyWhitener import PyWhitener
 import pywhiten.data
 import pywhiten.pwio
 import pywhiten.optimization
+
+
+

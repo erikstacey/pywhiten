@@ -81,11 +81,11 @@ class PyWhitener:
 
         # we're now ready to do some frequency analysis
 
-    def id_peak(self, method, idx=-1):
+    def id_peak(self, method, min_prov_sig = 0, idx=-1):
         """
         Gets a candidate frequency/amplitude pair from a periodogram belonging to a light curve in lcs list
         Args:
-            method (str): A method used to identify a peak. Allowed values: ['highest', 'slf', 'poly', 'avg']. Refer
+            method (str): A method used to identify a peak. Allowed values: ['highest', 'slf', 'poly']. Refer
                 to data.Periodogram.select_peak() for more details
             idx (int): index in lcs list to identify a peak from
 
@@ -97,7 +97,7 @@ class PyWhitener:
             float: candidate amplitude.
         """
         return self.lcs[idx].periodogram.select_peak(method=method,
-                                                     min_prov_sig=self.cfg["autopw"]["peak_selection_cutoff_sig"])
+                                                     min_prov_sig=min_prov_sig)
 
     def it_pw(self, peak_selection_method="highest"):
         """
@@ -107,7 +107,7 @@ class PyWhitener:
         light curve ready for another iteration.
         Args:
             peak_selection_method (str):  the peak selection method used to get a candidate frequency/amplitude. can be
-                one of ['highest', 'slf', 'poly', 'avg'] - see id_peak method of data.Periodogram class
+                one of ['highest', 'slf', 'poly'] - see id_peak method of data.Periodogram class
 
         Returns:
             int : a flag indicating whether the PW iteration succeeded
@@ -121,7 +121,9 @@ class PyWhitener:
             print(f"[pywhiten] ITERATION {self.freqs.n + 1}")
 
         # First stage, identify a candidate frequency/amplitude from the most recent periodogram
-        candidate_frequency, candidate_amplitude = self.id_peak(method=peak_selection_method)
+        candidate_frequency, candidate_amplitude = self.id_peak(method=peak_selection_method,
+                                                                min_prov_sig=
+                                                                self.cfg["autopw"]["peak_selection_cutoff_sig"])
         if self.cfg["output"]["print_debug_messages"]:
             print(f"[DEBUG][pywhiten] Identified candidate frequency {candidate_frequency} and"
                   f" amplitude {candidate_amplitude} using method {peak_selection_method}")
