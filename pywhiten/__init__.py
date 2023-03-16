@@ -15,5 +15,19 @@ import pywhiten.data
 import pywhiten.pwio
 import pywhiten.optimization
 
+def make_config_file(path="./default.toml"):
+    import shutil
+    """
+    Copies the default config file to somewhere (typically) outside the package files, so it can be edited by the user.
+    Args:
+        path (str): Path to copy the default configuration to
+
+    Returns:
+
+    """
+    shutil.copyfile(pkg_path + "/cfg/default.toml", path)
+    print(f"[pywhiten] Made a copy of default configuration file at {path}!")
+
+
 
 

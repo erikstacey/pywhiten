@@ -74,9 +74,9 @@ class Frequency:
         self.n = n
         self.model_function = model_function
 
-        self.sig_poly = None
-        self.sig_avg = None
-        self.sig_slf = None
+        self.sig_poly = 0
+        self.sig_avg = 0
+        self.sig_slf = 0
 
 
     def update(self, f, a, p):

@@ -252,8 +252,8 @@ class OutputManager:
         """
 
         #%todo: set lc formatting to properly parse label configuration
-        pl.xlabel(self.cfg["output"]["fig_labels"]["lc_x_label"])
-        pl.ylabel(self.cfg["output"]["fig_labels"]["lc_x_label"])
+        pl.xlabel(self.cfg["plots"]["lightcurves"]["x_label"])
+        pl.ylabel(self.cfg["plots"]["lightcurves"]["y_label"])
         if legend:
             pl.legend()
         pl.tight_layout()
@@ -277,8 +277,8 @@ class OutputManager:
         :return: None
         """
         # %todo: set pg formatting to properly parse label configuration
-        pl.xlabel(self.cfg["output"]["fig_labels"]["pg_x_label"])
-        pl.ylabel(self.cfg["output"]["fig_labels"]["pg_x_label"])
+        pl.xlabel(self.cfg["plots"]["periodograms"]["x_label"])
+        pl.ylabel(self.cfg["plots"]["periodograms"]["y_label"])
         if legend:
             pl.legend()
         pl.tight_layout()
@@ -291,7 +291,7 @@ class OutputManager:
         :param freq: A frequency object
         :return: Amplitude in mmag, amplitude uncertainty in mmag, adjusted phase, adjusted initial magnitude in mmag
         """
-        a, a_err, p, a0, p0 = freq.a, freq.a_err, freq.p, freq.a0, freq.p0
+        a, a_err, p, a0, p0 = freq.a, freq.sigma_a, freq.p, freq.a0, freq.p0
         am, a_errm = flux2mag_e(a, self.cfg["output"]["reference_flux"], self.cfg["output"]["reference_mag"], a_err)
         a0m = flux2mag(a0, self.cfg["output"]["reference_flux"], self.cfg["output"]["reference_mag"])
         # flip so it's positive
@@ -305,39 +305,37 @@ class OutputManager:
             p0m += 1
         return am * 1000, a_errm * 1000, pm, a0m * 1000
 
-    def save_freqs(self, freqs: FrequencyContainer, path: str):
+    def save_freqs(self, freqs: FrequencyContainer):
         """
         Format and save a frequency list as a csv
         :param freqs: A list of Freq objects to save
-        :param path: The path at which to save the data
         :return: None
         """
-        with open(path, "w") as f:
+        with open(f"{self.output_dirs['base']}/frequencies.csv", "w") as f:
             f.write(f"Freq,Amp,Phase,Freq_err,Amp_err,Phase_err,Sig_slf,Sig_lopoly,Sig_avg\n")
             if self.cfg["output"]["plot_output_in_mmag"]:
                 for freq in freqs.get_flist():
-                    am, a_errm, pm, _ = self.get_freq_params_in_mmag(freq)
+                    am, sigma_am, pm, _ = self.get_freq_params_in_mmag(freq)
                     f.write(
-                        f"{freq.f},{am},{pm},{freq.f_err},{a_errm},{freq.p_err},{freq.sig_slf},{freq.sig_poly},{freq.sig_avg}\n")
+                        f"{freq.f},{am},{pm},{freq.sigma_f},{sigma_am},{freq.sigma_p},{freq.sig_slf},{freq.sig_poly},{freq.sig_avg}\n")
             else:
                 for freq in freqs.get_flist():
                     f.write(
-                        f"{freq.f},{freq.a},{freq.m},{freq.f_err},{freq.a_err},{freq.p_err},{freq.sig_slf},"
+                        f"{freq.f},{freq.a},{freq.p},{freq.sigma_f},{freq.sigma_a},{freq.sigma_p},{freq.sig_slf},"
                         f"{freq.sig_poly},{freq.sig_avg}\n")
 
-    def save_freqs_as_latex_table(self, freqs: FrequencyContainer, path: str):
+    def save_freqs_as_latex_table(self, freqs: FrequencyContainer):
         """
         Format and save a frequency list as a latex table
         :param freqs: A list of Freq objects to save
         :param path: The path at which to save the data
         :return: None
         """
-        with open(path, "w") as f:
+        with open(f"{self.output_dirs['auxiliary']}/frequencies.csv", "w") as f:
             for freq in freqs.get_flist():
                 am, a_errm, pm, _ = self.get_freq_params_in_mmag(freq)
-
-                f.write(f"{freq.n + 1} & {format_output(freq.f, freq.f_err, 2)} & {format_output(am, a_errm, 2)} &"
-                        f" {format_output(pm, freq.p_err, 2)} & {round(freq.sig_slf, 2)} & {round(freq.sig_avg, 2)} &"
+                f.write(f"{freq.n + 1} & {format_output(freq.f, freq.sigma_f, 2)} & {format_output(am, a_errm, 2)} &"
+                        f" {format_output(pm, freq.sigma_p, 2)} & {round(freq.sig_slf, 2)} & {round(freq.sig_avg, 2)} &"
                         f"\\\\ \n")
 
     def save_lc(self, lightcurve, path):

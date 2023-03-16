@@ -314,7 +314,8 @@ class Periodogram:
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_slf(self.lsfreq, self.lsamp) > min_prov_sig
-            self.peak_selection_debug_plot(working_mask)
+            if self.cfg["output"]["debug"]["show_peak_selection_plots"]:
+                self.peak_selection_debug_plot_slf(working_mask)
             return self.highest_ampl(excl_mask=working_mask)
         elif method == "poly":
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
@@ -325,6 +326,8 @@ class Periodogram:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
     def eval_slf_model(self, x):
+        """Performs a SLF fit if one hasn't been performed already,
+        and evaluates the SLF model fit at the x value(s) provided."""
         if self.slf_p is None:
             self.fit_slf()
         return slf_noise(x, *self.slf_p)
@@ -333,7 +336,7 @@ class Periodogram:
         pl.plot(self.lsfreq, self.lsamp, color="black")
         pl.show()
         pl.clf()
-    def peak_selection_debug_plot(self, working_mask):
+    def peak_selection_debug_plot_slf(self, working_mask):
         pl.plot(self.lsfreq[working_mask], self.lsamp[working_mask], color="green", linestyle="none", marker=".", markersize=2)
         pl.plot(self.lsfreq[~working_mask], self.lsamp[~working_mask], color="black", linestyle = "none", marker=".", markersize=2)
         pl.plot(self.lsfreq, slf_noise(self.lsfreq, *self.slf_p)*3, color="red", linestyle = "--")

@@ -1,4 +1,6 @@
 import tomli
+
+import pywhiten
 from pywhiten.data import *
 from pywhiten.pwio import OutputManager
 from pywhiten.optimization.Optimizer import Optimizer
@@ -124,11 +126,11 @@ class PyWhitener:
         candidate_frequency, candidate_amplitude = self.id_peak(method=peak_selection_method,
                                                                 min_prov_sig=
                                                                 self.cfg["autopw"]["peak_selection_cutoff_sig"])
-        if self.cfg["output"]["print_debug_messages"]:
+        if self.cfg["output"]["debug"]["print_debug_messages"]:
             print(f"[DEBUG][pywhiten] Identified candidate frequency {candidate_frequency} and"
                   f" amplitude {candidate_amplitude} using method {peak_selection_method}")
         if candidate_frequency is None and candidate_amplitude is None:
-            if self.cfg["output"]["print_debug_messages"]:
+            if self.cfg["output"]["debug"]["print_debug_messages"]:
                 print(f"[DEBUG][pywhiten] TERMINATION CRITERION SATISFIED")
             return 1
 
@@ -189,6 +191,8 @@ class PyWhitener:
         """
         self.freqs.compute_significances(self.lcs[residual_lc_idx].periodogram)
         self.freqs.compute_parameter_uncertainties(self.lcs[residual_lc_idx])
+        self.output_manager.save_freqs(freqs=self.freqs)
+        self.output_manager.save_freqs_as_latex_table(freqs=self.freqs)
 
 
 
