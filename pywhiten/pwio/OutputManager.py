@@ -40,7 +40,6 @@ class OutputManager:
                    "pgs_base": None,
                    "pgs_raw": None,
                    "pgs_slf": None,
-                   "pgs_box": None,
                    "pgs_lopoly": None,
                    "pgs_data": None,
                    "lcs_base": None,
@@ -62,7 +61,7 @@ class OutputManager:
             for key in ["pgs_base", "lcs_base", "auxiliary"]:
                 self.output_dirs[key] = self.output_dirs["base"] + cfg["output"]["paths"][key]
             # set up pgs directories
-            for key in ["pgs_raw", "pgs_slf", "pgs_box", "pgs_lopoly", "pgs_data"]:
+            for key in ["pgs_raw", "pgs_slf", "pgs_lopoly", "pgs_data"]:
                 self.output_dirs[key] = self.output_dirs["pgs_base"] + cfg["output"]["paths"][key]
             # set up lcs directories
             for key in ["lcs_raw", "lcs_sf", "lcs_mf", "lcs_data"]:

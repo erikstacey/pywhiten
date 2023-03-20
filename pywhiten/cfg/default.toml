@@ -44,7 +44,6 @@ title = "pywhiten default configuration"
     #   pgs_base
     #       pgs_raw
     #       pgs_slf
-    #       pgs_box
     #       pgs_lopoly
     #       pgs_data
     #   lcs_base
@@ -57,7 +56,6 @@ title = "pywhiten default configuration"
     pgs_base = "/pgs"
     pgs_raw = "/raw" # relative to pgs_base
     pgs_slf= "/slf" # relative to pgs_base
-    pgs_box= "/box" # relative to pgs_base
     pgs_lopoly = "/lopoly" # relative to pgs_base
     pgs_data = "/data"
     lcs_base= "/lcs"
