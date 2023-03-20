@@ -102,7 +102,7 @@ class Periodogram:
         xatpeak = filtered_lsfreq[ymax]
         return xatpeak, filtered_lsamp[ymax]
 
-    def _find_troughs(self, center):
+    def find_troughs(self, center):
         """
         Determine local minima on either side of a specified value
         Args:
@@ -128,7 +128,7 @@ class Periodogram:
                 left_i = len(self.lsfreq)
         return left_i, right_i
 
-    def _find_index_of_freq(self, t):
+    def find_index_of_freq(self, t):
         """
         Finds the index of lsfreq holding the closest frequency to a specified frequency
         Args:
@@ -137,24 +137,16 @@ class Periodogram:
         Returns:
             int: the index of lsfreq holding the closest frequency to t
         """
-        c_arr = self.lsfreq
-        lower_bound = 0
-        upper_bound = len(c_arr)
-        while True:
-            mid_i = (upper_bound - lower_bound) // 2 + lower_bound
-            if t > self.lsfreq[mid_i]:
-                lower_bound = mid_i
-            elif t <= self.lsfreq[mid_i]:
-                upper_bound = mid_i
-            if upper_bound - lower_bound <= 1:
-                lower_diff = abs(self.lsfreq[lower_bound] - t)
-                upper_diff = abs(self.lsfreq[upper_bound] - t)
-                if lower_diff > upper_diff:
-                    return upper_bound
+        # just do linear search
+        # this could be a binary search but it's not used all that often
+        for i in range(len(self.lsfreq)-1):
+            # check if t is between values at i, i+1
+            if self.lsfreq[i] < t < self.lsfreq[i+1]:
+                # find out which one it is closer to
+                if abs(self.lsfreq[i] - t) > abs(self.lsfreq[i+1] - t):
+                    return i
                 else:
-                    return lower_bound
-            else:
-                return lower_bound
+                    return i+1
 
     def peak_sig_box(self, center_val_freq, freq_amp, bin_r=1.0):
         """
@@ -170,7 +162,7 @@ class Periodogram:
             float: A measured significance for the input peak
         """
         center_i_freq = np.where(self.lsfreq == center_val_freq)[0][0]
-        trough_left_i, trough_right_i = self._find_troughs(center_i_freq)
+        trough_left_i, trough_right_i = self.find_troughs(center_i_freq)
         # determine target frequencies on either side of peak
         lower_val_freq = self.lsfreq[center_i_freq] - bin_r
         upper_val_freq = self.lsfreq[center_i_freq] + bin_r
@@ -185,8 +177,8 @@ class Periodogram:
             upper_val_freq = max(self.lsfreq)
 
         # convert target frequencies to frequency indices
-        lower_i_freq = self._find_index_of_freq(lower_val_freq)
-        upper_i_freq = self._find_index_of_freq(upper_val_freq)
+        lower_i_freq = self.find_index_of_freq(lower_val_freq)
+        upper_i_freq = self.find_index_of_freq(upper_val_freq)
 
         if lower_i_freq < 0:
             lower_i_freq = 0
@@ -211,13 +203,13 @@ class Periodogram:
         Returns:
             float: A measured significance for the input periodic component
         """
-        center_i_freq = self._find_index_of_freq(center_val_freq)
+        center_i_freq = self.find_index_of_freq(center_val_freq)
         # find values of edge frequencies
         lower_val_freq = self.lsfreq[center_i_freq] - bin_r
         upper_val_freq = self.lsfreq[center_i_freq] + bin_r
         # find left and right indices
-        lower_i_freq = self._find_index_of_freq(lower_val_freq)
-        upper_i_freq = self._find_index_of_freq(upper_val_freq)
+        lower_i_freq = self.find_index_of_freq(lower_val_freq)
+        upper_i_freq = self.find_index_of_freq(upper_val_freq)
         total_avg_region = self.lsamp[lower_i_freq:upper_i_freq]
         return freq_amp / np.mean(total_avg_region)
 
@@ -293,38 +285,43 @@ class Periodogram:
                  methods impose an additional significance criterion that the highest peak must exceed, and which
                 of the three chosen specifies how the significance is measured.
             min_prov_sig (float): The minimum significance that a prospective peak must exceed if using the "slf",
-                "poly", or "avg" methods.
+                "poly" methods.
             mask (ndarray): Array of boolean values excluding regions from peak selection. These regions are still used
                 to measure significances, if applicable.
             cutoff (int): The number of times to try finding a peak above the provisional significance level before
                 aborting and returning Nones. Only applies to box_avg selecction.
         Returns:
-            float: the selected frequency. None if method is set to one of "slf", "poly", or "avg" and a peak exceeding
-                min_prov_sig cannot be found.
-            float: the selected amplitude. None if method is set to one of "slf", "poly", or "avg" and a peak exceeding
-                min_prov_sig cannot be found.
+            float: the selected frequency. None if method is set to one of "slf", "poly" and a peak exceeding
+                min_prov_sig cannot be found. Also returns None if user provides a mask consisting of all False values
+            float: the selected amplitude. None if method is set to one of "slf", "poly" and a peak exceeding
+                min_prov_sig cannot be found. Also returns None if user provides a mask consisting of all False values
         """
         # set up a mask to exclude
         working_mask = np.ones(len(self.lsfreq), dtype=bool)
+
         if mask is not None:
             working_mask*=mask
+
         if method == "highest":
-            return self.highest_ampl(excl_mask=working_mask)
+            pass
         elif method == "slf":
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_slf(self.lsfreq, self.lsamp) > min_prov_sig
             if self.cfg["output"]["debug"]["show_peak_selection_plots"]:
                 self.peak_selection_debug_plot_slf(working_mask)
-            return self.highest_ampl(excl_mask=working_mask)
         elif method == "poly":
             # we can just use the fit functions to dettermine a provisional noise level for all lsfreq values,
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_poly(self.lsfreq, self.lsamp) > min_prov_sig
-            return self.highest_ampl(excl_mask=working_mask)
         else:
             raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
+
+        if (~working_mask).all():  # this condition checks if the mask contains all false values
+            return None, None
+        else:
+            return self.highest_ampl(excl_mask=working_mask)
     def eval_slf_model(self, x):
         """Performs a SLF fit if one hasn't been performed already,
         and evaluates the SLF model fit at the x value(s) provided."""
@@ -353,3 +350,7 @@ class InvalidMethodError(Exception):
 
 class AverageRadiusTooNarrow(Exception):
     pass
+
+if __name__=="__main__":
+    time = np.linspace(0, 100, 100)
+    data = np.random.rand(100)
