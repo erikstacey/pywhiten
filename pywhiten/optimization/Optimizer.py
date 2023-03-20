@@ -25,7 +25,7 @@ class Optimizer:
     sf_func = None
     mf_func = None
     cfg : dict = None
-    c_zp : float
+    c_zp : float = 0
 
     def __init__(self, cfg):
         if type(cfg) == dict:

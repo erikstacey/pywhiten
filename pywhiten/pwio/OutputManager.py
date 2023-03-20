@@ -90,13 +90,17 @@ class OutputManager:
             raise ValueError(f"Configuration optimization.frequency_model_type is set to"
                              f" {self.cfg['optimization']['frequency_model_type']}, must be 'sin' or 'cos'")
 
-    def save_it(self, lcs, frequency_container, zp):
+    def save_it(self, lcs, frequency_container, zp=0):
         """
-        Save the results from a single iteration. This is called at the end of each iteration.
-        :param lcs: Current list of light curves stored in the parent Dataset obj
-        :param freqs: Current list of frequencies stored in the parent Dataset obj
-        :param zp: Current floating mean adjustment stored in the parent Dataset obj
-        :return: None
+        Saves plots and data for a single pre-whitening iteration using the up-to-date light curve list and frequency
+        container from the pre-whitening. It assumes the last value in each is from the iteration of interest
+        Args:
+            lcs (list): a list containing Lightcurve objects
+            frequency_container (FrequencyContainer): A frequency container object with non-zero number of frequencies
+            zp (float): The zero point
+
+        Returns:
+
         """
         freqs = frequency_container.get_flist()
         n = len(freqs) - 1
@@ -151,85 +155,13 @@ class OutputManager:
         # lopoly =======================================
         if c_pg.log_polypar is not None:
             self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_polyfit_model(c_pg.lsfreq), color="red",
+            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.eval_poly_model(c_pg.lsfreq), color="red",
                                        label="LOPoly Fit")
             self.add_pg_formatting_to_curfig(legend=True)
             pl.savefig(f"{self.output_dirs['pgs_lopoly']}/pg{n}.png")
             pl.clf()
 
-    def post_pw(self, lcs, freqs, zp):
-        """
-        Saves plots and data after the pre-whitening is complete and the post-prewhitening adjustments are made.
-        :param lcs: Final list of light curves stored in the parent Dataset obj.
-        :param freqs: Final list of Freq object stored in the parent Dataset obj.
-        :param zp: Final floating mean adjustment stored in the parent Dataset obj.
-        :return: None
-        """
-        n = len(lcs)
-        c_lc = lcs[-1]
-        c_pg = c_lc.periodogram
 
-        # ================= LC PLOTS ===================
-        # regular ======================================
-        self.add_lc_plot_to_curfig(x=c_lc.time, y=c_lc.data)
-        self.add_lc_formatting_to_curfig()
-        pl.savefig(f"{self.output_dirs['lcs_base']}/lc{n}_final_residual.png")
-        pl.clf()
-        # mf ===========================================
-        self.add_lc_plot_to_curfig(x=lcs[0].time, y=lcs[0].data, label="Data")
-        mf_y = np.zeros(len(lcs[0].time)) + zp
-        for freq in freqs:
-            mf_y += freq.genmodel(lcs[0].time)
-        self.add_lc_plot_to_curfig(x=lcs[0].time, y=mf_y, color="red", label="Complete Variability Model", linestyle="-", marker="")
-        self.add_lc_formatting_to_curfig(legend=True)
-        pl.savefig(f"{self.output_dirs['lcs_base']}/lc_mf{n}_final.png")
-        pl.clf()
-
-        # stdevs =======================================
-        stdevs_x = np.array([x for x in range(len(lcs))])
-        stdevs_y = np.array([np.std(flux2mag(lc.data, self.rflux) * 1000) for lc in lcs])
-        pl.plot(stdevs_x, stdevs_y, linestyle="none", marker=".", markersize=6, color='black')
-        pl.xlabel("Iteration")
-        pl.ylabel("Standard Deviation [mmag]")
-        pl.savefig(f"{self.output_dirs['auxiliary']}/stdevs.png")
-        pl.clf()
-
-        # ================= PG PLOTS ===================
-        # regular ======================================
-        self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-        self.add_pg_formatting_to_curfig()
-        pl.savefig(f"{self.output_dirs['pgs_base']}/pg{n}_final_residual.png")
-        pl.clf()
-        # slf ==========================================
-        if c_pg.slf_p is not None:
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.eval_slf_model(c_pg.lsfreq), color="red", label="SLF Fit")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq,
-                                       y=c_pg.eval_slf_model(c_pg.lsfreq) * self.cfg["autopw"]["peak_selection_cutoff_sig"],
-                         color="blue", label="Minimum Selection Amplitude", linestyle="--")
-            self.add_pg_formatting_to_curfig(legend=True)
-            pl.savefig(f"{self.output_dirs['lcs_slf']}/pg{n}_final_residual.png")
-            pl.clf()
-        # lopoly =======================================
-        if c_pg.polyparams_log is not None:
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.lsamp, label="Data")
-            self.add_pg_plot_to_curfig(x=c_pg.lsfreq, y=c_pg.get_polyfit_model(c_pg.lsfreq), color="red", label="LOPoly Fit")
-            self.add_pg_formatting_to_curfig(legend=True)
-            pl.savefig(f"{self.output_dirs['lcs_lopoly']}/pg{n}_final_residual.png")
-            pl.clf()
-
-        self.save_freqs(freqs, f"{self.output_dirs['base']}/pwfrequencies.csv")
-        # save last LC and PG to main dir
-        self.add_lc_plot_to_curfig(lcs[-1].time, lcs[-1].data)
-        self.add_lc_formatting_to_curfig()
-        pl.savefig(f"{self.output_dirs['base']}/pw_residual_lc.png")
-        pl.clf()
-
-        self.add_pg_plot_to_curfig(lcs[-1].periodogram.lsfreq, lcs[-1].periodogram.lsamp)
-        self.add_pg_formatting_to_curfig()
-        pl.savefig(f"{self.output_dirs['base']}/residual_pg.png")
-        pl.clf()
-        self.save_freqs_as_latex_table(freqs, f"{self.main_dir}/freqtable.tex")
 
     def add_lc_plot_to_curfig(self, x, y, color="black", marker=".", alpha=1.0, linestyle="none", label="",
                               markersize=1):

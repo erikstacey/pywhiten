@@ -213,7 +213,7 @@ class Periodogram:
         total_avg_region = self.lsamp[lower_i_freq:upper_i_freq]
         return freq_amp / np.mean(total_avg_region)
 
-    def fit_lopoly(self, poly_order: int):
+    def fit_lopoly(self, poly_order: int = pywhiten.default_cfg["periodograms"]["polyfit_order"]):
         """
         Fits the periodogram with a polynomial in log-log space and stores the coefficients in the
         attribute log_polypar
@@ -328,6 +328,15 @@ class Periodogram:
         if self.slf_p is None:
             self.fit_slf()
         return slf_noise(x, *self.slf_p)
+
+    def eval_poly_model(self, x):
+        if self.log_polypar is None:
+            self.fit_lopoly(self.cfg["periodograms"]["polyfit_order"])
+
+        logfreq = np.log10(self.lsfreq)
+        logvals = n_model_poly(logfreq, *self.log_polypar)
+        return 10**logvals
+
 
     def debug_plot(self):
         pl.plot(self.lsfreq, self.lsamp, color="black")

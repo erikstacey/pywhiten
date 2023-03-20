@@ -89,6 +89,8 @@ title = "pywhiten default configuration"
     upper_limit = 20  # can be "nyquist" or non-negative float greater than lower_limit
     # number of points per unit in frequency. If the time series is specified in days, [f] = [c/d]
     points_per_resolution_element = 20
+    # sets the order of polynomial to use when fitting a polynomial to periodograms
+    polyfit_order = 5
 
 [autopw]
     peak_selection_method = "slf"  # Can be slf, highest, bin

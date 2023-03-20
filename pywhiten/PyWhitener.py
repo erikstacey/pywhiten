@@ -193,12 +193,7 @@ class PyWhitener:
         self.freqs.compute_parameter_uncertainties(self.lcs[residual_lc_idx])
         self.output_manager.save_freqs(freqs=self.freqs)
         self.output_manager.save_freqs_as_latex_table(freqs=self.freqs)
-
-
-
-
-
-
+        self.output_manager.save_it(self.lcs, self.freqs, self.optimizer.c_zp)
 
 def merge_dict(old_dict, new_dict):
     """
