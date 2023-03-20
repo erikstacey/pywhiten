@@ -16,7 +16,16 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "astropy",
+    "tomli",
+    "scipy",
+    "lmfit"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/erikstacey/pywhiten"
 "Bug Tracker" = "https://github.com/erikstacey/pywhiten/issues"
+"Documentation" = "https://readthedocs.org/projects/pywhiten/"
