@@ -2,7 +2,7 @@
 
 A python package for conducting Lomb-Scargle-based pre-whitening of time series data.
 
-## Installation
+# Installation
 
 pywhiten is available through pip:  
 ```
@@ -15,20 +15,20 @@ cd pywhiten
 pip install .
 ```
 
-## Getting Started
+# Getting Started
 See the readthedocs page [here](https://pywhiten.readthedocs.io/en/latest/getting-started)
 
-## Documentation
+# Documentation
 View the readthedocs [here](https://pywhiten.readthedocs.io/en/latest/)
 
-## Methodology and Implementation
+# Methodology and Implementation
 
 This package is principally designed for automated or semi-automated frequency analysis. More specifically, a type of
 pre-whitening analysis is conducted iteratively to quantitatively identify sinusoidal signals present in time series
 data (for time series with non-sinusoidal signals, a technique like Phase Dispersion Minimization may be more suitable;
 see [phmin](https://github.com/erikstacey/phmin)).
 
-# Basics of Pre-Whitening
+## Basics of Pre-Whitening
 
 This type of frequency analysis can be broadly defined by each iteration consisting of the following steps:
 
@@ -43,7 +43,7 @@ Following these steps will result in an optimized sinusoidal model for a single 
 conducting this process many times, all the measurable periodic signals (including non-sinusoidal signals) can be extracted leaving, ideally,
 a time series consisting only of the underlying noise.
 
-# Pywhiten Implementation
+## Pywhiten Implementation
 
 A significant portion of the work that went into developing this package was in testing specific implementations of the basic process outlined above.
 The objective of this testing was to design a procedure that could identify weaker signals in a time series dominated by a very strong harmonic structure,
