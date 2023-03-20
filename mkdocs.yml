@@ -1,1 +1,5 @@
-site_name: My Docs
+site_name: pywhiten
+site_url: https://github.com/erikstacey/pywhiten
+nav:
+    - Home: index.md
+theme: readthedocs
