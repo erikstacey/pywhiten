@@ -17,7 +17,7 @@ pip install .
 
 
 # Documentation
-The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section.
+The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section. Please note this documentation is currently under construction!
 # Getting Started
 Pywhiten was designed to be easy to get up and running quickly out of the box, so let us walk through a tutorial example.
 ## Setting up a tutorial directory
