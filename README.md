@@ -15,8 +15,75 @@ cd pywhiten
 pip install .
 ```
 
+
 # Documentation
-The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started)
+The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section.
+# Getting Started
+Pywhiten was designed to be easy to get up and running quickly out of the box, so let us walk through a tutorial example.
+## Setting up a tutorial directory
+First, lets create a tutorial directory somewhere:
+```
+mkdir pywhiten_tutorial
+cd pywhiten_tutorial
+```
+
+Then, grab an example set of time series data [here](https://github.com/erikstacey/pywhiten/blob/master/Sample_Prewhitening_Directory/HD47129_thresh9_lc.txt) and
+place it in a tutorial directory. Alternatively, you can provide your own time series data noting that the import examples may differ depending on your data format.
+## Importing data and setting up a Pywhitener
+To start pre-whitening, we need to load our time series data. But first, we need to create a python script. Here's an example with Vim, however you can use whatever you usually use to write python code:
+```
+vim example.py
+```
+Now, writing in our example script, we'll load our time series data into three arrays from the example file:
+```
+import numpy
+
+time, data, err = np.loadtxt("HD47129_thresh9_lc.txt", unpack=True)
+```
+
+The Pywhitener class provides an easy-to-use interface to the rest of the package and powerful functionality for automated or semi-automated frequency analysis. Lets make one here by passing in the time series data we just loaded in:
+
+```
+pywhitener = pywhiten.PyWhitener(time=time, data=data, err=err)
+```
+
+Note that if you don't provide an error array, it will assume the data to be equally weighted. 
+
+## Automatic Pre-Whitening
+
+Now, running an automatic frequency analysis is as simple as calling the auto method:
+```
+pywhitener.auto()
+```
+
+This will automatically proceed through several iterations and, if using the sample data, will terminate after the 16th iteration after achieving the termination criterion. This will also
+create a pw_out directory in the working directory and populate it with results. If you want to have a quick peek at the results, have a look at pw_out/frequencies.csv in your shell:
+```
+more ./pw_out/frequencies.csv
+```
+
+## Semi-automatic Pre-Whitening
+If you want to proceed in single iterations only, you can do that with the it_pw() method of the pywhitener. Here's an example:
+
+```
+import numpy
+
+time, data, err = np.loadtxt("HD47129_thresh9_lc.txt", unpack=True)
+pywhitener = pywhiten.PyWhitener(time=time, data=data, err=err)
+pywhitener.it_pw()
+```
+This will identify a single frequency. You can run this ten times to get ten frequencies:
+```
+for i in range(10):
+   pywhitener.it_pw()
+```
+You can output this data to the pw_out directory using
+```
+pywhitener.post_pw()
+```
+Now, this example has so far used the default configuration for the program. Pywhiten derives its flexibility from its
+configuration files, which make it possible to automate batch running frequency analyses on data from different instruments
+with different configuration requirements. More details on the configuration can be found [here](https://pywhiten.readthedocs.io/en/latest/configuration)
 
 # Methodology and Implementation
 
