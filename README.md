@@ -85,6 +85,42 @@ Now, this example has so far used the default configuration for the program. Pyw
 configuration files, which make it possible to automate batch running frequency analyses on data from different instruments
 with different configuration requirements. More details on the configuration can be found [here](https://pywhiten.readthedocs.io/en/latest/configuration)
 
+## Directly Accessing Data and Results
+
+If you'd like to directly access the results, that's easily accomplished through the attributes of the pywhitener.
+
+### Light Curves
+
+Light curves are stored in a list in the lcs attribute. Here's an example of accessing the residual lightcurve of the last iteration and plotting the results:
+```
+import matplotlib.pyplot as pl
+residual_lc = pywhitener.lcs[-1]
+pl.plot(residual_lc.time, residual_lc.data)
+pl.show()
+```
+Refer to the documentation for what can be achieved using the Lightcurve objects.
+
+### Periodograms
+
+As periodograms are a description of the frequency spectrum of a time series, they are stored within the Lightcurve objects. Here's an example of accessing and plotting the residual periodogram:
+```
+import matplotlib.pyplot as pl
+residual_lc = pywhitener.lcs[-1]
+residual_periodogram = residual_lc.periodogram
+pl.plot(residual_periodogram.lsfreq, residual_periodogram.lsamp)
+pl.show()
+```
+
+### Frequencies
+
+Unlike light curves, Frequency objects are stored in their own special container. A list of frequency objects can be acquired through a method of the FrequencyContainer object:
+```
+frequencies_list = pywhitener.freqs.get_flist()
+print(f"The last identified frequency is at {frequencies_list[-1].f:.5f} with an amplitude of {frequencies_list[-1].a:.5f}!)
+```
+
+All of the Frequency, FrequencyContainer, Lightcurve, and Periodogram objects have useful functionality which is documented in the Data module of the docs!
+
 # Methodology and Implementation
 
 This package is principally designed for automated or semi-automated frequency analysis. More specifically, a type of
