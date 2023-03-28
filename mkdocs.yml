@@ -2,4 +2,5 @@ site_name: pywhiten
 site_url: https://github.com/erikstacey/pywhiten
 nav:
     - Home: index.md
+    - Getting Started: getting-started.md
 theme: readthedocs

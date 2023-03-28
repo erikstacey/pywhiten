@@ -1,4 +1,4 @@
-![##PyWhiten](pywhitenlogo3.png)
+![##PyWhiten](docs/img/pywhitenlogo3.png)
 
 A python package for conducting Lomb-Scargle-based pre-whitening of time series data.
 
