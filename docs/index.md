@@ -1,6 +1,6 @@
 # Pywhiten
 
-![PyWhiten](pywhitenlogo3.png)
+![PyWhiten](img/pywhitenlogo3.png)
 
 Pywhiten is a Python package which is used for conducting Lomb-Scargle based frequency analyses of time series data. It was
 written by Erik Stacey for application with TESS and CoRoT photometric observations of massive stars. While principally

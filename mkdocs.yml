@@ -3,4 +3,8 @@ site_url: https://github.com/erikstacey/pywhiten
 nav:
     - Home: index.md
     - Getting Started: getting-started.md
+    - Configuration: configuration.md
+    - Data (Module): module-data.md
+    - Optimization (Module): module-optimization.md
+    - Input/Output (pwio; Module): module-pwio.md
 theme: readthedocs
