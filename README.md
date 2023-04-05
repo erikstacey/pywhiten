@@ -1,6 +1,10 @@
 ![##PyWhiten](docs/img/pywhitenlogo3.png)
 
-A python package for conducting Lomb-Scargle-based pre-whitening of time series data.
+A flexible python package for conducting Lomb-Scargle-based pre-whitening of time series data. It is distinguished from other, similar tools by a focus on automated pipeline-style analysis and a high degree of flexibility through its extensive [configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) system.
+
+Written by [Erik Stacey](https://www.erikstacey.com/)
+
+Updated 5 April 2023.
 
 # Installation
 
@@ -17,7 +21,7 @@ pip install .
 
 
 # Documentation
-The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section. Please note this documentation is currently under construction!
+The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section. Please note this documentation is currently under construction, however the [Getting Started](https://pywhiten.readthedocs.io/en/latest/getting-started/) and [Configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) articles are complete.
 # Getting Started
 Pywhiten was designed to be easy to get up and running quickly out of the box, so let us walk through a tutorial example.
 ## Setting up a tutorial directory
