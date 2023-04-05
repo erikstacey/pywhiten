@@ -24,7 +24,7 @@ Variables:
 import tomli
 import os
 pkg_path = os.path.abspath(__file__)[:-11]
-with open(pkg_path + "/cfg/default.toml", "rb") as f:
+with open(pkg_path + "cfg/default.toml", "rb") as f:
     default_cfg = tomli.load(f)
 
 from pywhiten.PyWhitener import PyWhitener
