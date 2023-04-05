@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywhiten"
-version = "1.0.0"
+version = "1.0.3"
 authors = [
   { name="Erik Stacey", email="erik@erikstacey.com" },
 ]

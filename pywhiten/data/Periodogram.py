@@ -141,12 +141,17 @@ class Periodogram:
         # this could be a binary search but it's not used all that often
         for i in range(len(self.lsfreq)-1):
             # check if t is between values at i, i+1
-            if self.lsfreq[i] < t < self.lsfreq[i+1]:
+            if self.lsfreq[i] <= t < self.lsfreq[i+1]:
                 # find out which one it is closer to
                 if abs(self.lsfreq[i] - t) > abs(self.lsfreq[i+1] - t):
                     return i
                 else:
                     return i+1
+        print("[pywhiten][WARNING]: attempted to retrieve index of frequency outside of Periodogram lsfreq span")
+        if t < self.lsfreq[0]:
+            return 0
+        else:
+            return len(self.lsfreq)
 
     def peak_sig_box(self, center_val_freq, freq_amp, bin_r=1.0):
         """

@@ -46,3 +46,4 @@ def test_FrequencyContainer_significances_and_uncertainties():
         assert test_container.get_flist()[i].sigma_f is not None
         assert test_container.get_flist()[i].sigma_a is not None
         assert test_container.get_flist()[i].sigma_p is not None
+

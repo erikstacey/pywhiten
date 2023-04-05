@@ -23,8 +23,11 @@ Variables:
 """
 import tomli
 import os
-pkg_path = os.path.abspath(__file__)[:-11]
-with open(pkg_path + "cfg/default.toml", "rb") as f:
+
+pkg_path = os.path.dirname(os.path.abspath(__file__))
+default_cfg_path = os.path.join(pkg_path, 'cfg', 'default.toml')
+
+with open(default_cfg_path, "rb") as f:
     default_cfg = tomli.load(f)
 
 from pywhiten.PyWhitener import PyWhitener
@@ -42,7 +45,7 @@ def make_config_file(path="./default.toml"):
     Returns:
 
     """
-    shutil.copyfile(pkg_path + "/cfg/default.toml", path)
+    shutil.copyfile(default_cfg_path, path)
     print(f"[pywhiten] Made a copy of default configuration file at {path}!")
 
 

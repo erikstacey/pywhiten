@@ -41,7 +41,7 @@ class PyWhitener:
         """
         # using this method to load the cfg maintains backwards compatibility with python 3.7 in the least painful form
         # load default cfg, then overwrite with config file specified by cfg
-        pkg_path = os.path.abspath(__file__)[:-14]
+        pkg_path = pywhiten.pkg_path
         default_config = pkg_path + "/cfg/default.toml"
         with open(default_config, "rb") as f:
             self.cfg = tomli.load(f)
@@ -67,7 +67,7 @@ class PyWhitener:
                 self.cfg["title"] = "Config loaded from file at specified path"
         # use the cfg argument of the initializer to overwrite any cfg entries
         if cfg is not None and type(cfg) == dict:
-            self.cfg = self.cfg = merge_dict(self.cfg, cfg)
+            self.cfg = merge_dict(self.cfg, cfg)
             self.cfg["title"] += " - Merged with runtime-specified arguments"
         # handle special logic cases
         pass

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="pywhiten",
-      version="0.0.1",
+      version="1.0.3",
       description="A python package for conducting Lomb-Scargle-based prewhitening of stellar time series. ",
       url="https://www.github.com/erikstacey/pywhiten",
       author="Erik William Stacey",
