@@ -2,10 +2,11 @@
 
 ![PyWhiten](img/pywhitenlogo3.png)
 
-Pywhiten is a Python package which is used for conducting Lomb-Scargle based frequency analyses of time series data. It was
-written by Erik Stacey for application with TESS and CoRoT photometric observations of massive stars. While principally
-designed for work with massive stars, much of its functionality is generally applicable to gapped and unevenly-sampled
-time series data.
+A flexible python package for conducting Lomb-Scargle-based pre-whitening of time series data. It is distinguished from other, similar tools by a focus on automated pipeline-style analysis and a high degree of flexibility through its extensive [configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) system.
+
+Written by [Erik Stacey](https://www.erikstacey.com/)
+
+Updated 5 April 2023.
 
 A getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started), and the full
 documentation can be accessed through the navigation panel.
