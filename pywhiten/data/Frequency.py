@@ -34,6 +34,11 @@ class Frequency:
             The value of a when this object was initialized
         p0 : float
             The value of p when this object was initialized
+
+        n: int
+            An index label
+        model_function : function
+            A function of the form f(x, f, a, p) which described the variability model.
     """
     f : float
     sigma_f : float
@@ -48,6 +53,9 @@ class Frequency:
     f0 : float
     a0 : float
     p0 : float
+
+    n = None
+    model_function = None
 
     def __init__(self, f:float, a:float, p:float, t0:float, model_function=sin_model, n:Union[int, None]=None):
         """
