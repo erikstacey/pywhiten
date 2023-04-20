@@ -21,7 +21,8 @@ class Lightcurve():
     err = None
     periodogram = None
 
-    def __init__(self, time, data, err = None):
+
+    def __init__(self, time, data, err = None, cfg = None):
         if (type(time) not in [list, np.ndarray, tuple]) or (type(data) not in [list, np.ndarray, tuple]):
             raise InvalidContructorArgumentsError("Lightcurve initialized with time or data not of type list, tuple,"
                                                   "or ndarray")
@@ -36,8 +37,10 @@ class Lightcurve():
         else:
             raise InvalidContructorArgumentsError("Lightcurve initialized with errors not of type list, tuple, ndarray,"
                                                   "or none")
-
-        self.periodogram = Periodogram(self.time, self.data)
+        if cfg is None:
+            self.periodogram = Periodogram(self.time, self.data)
+        else:
+            self.periodogram = Periodogram(self.time, self.data, cfg=cfg)
 
 
     def unpack(self):

@@ -74,9 +74,9 @@ class PyWhitener:
         # config setup done
         # now set up initial light curve, frequency container, output mgr
         if self.cfg["input"]["subtract_mean"]:
-            self.lcs = [Lightcurve(time, data-np.mean(data), err)]
+            self.lcs = [Lightcurve(time, data-np.mean(data), err, cfg=self.cfg)]
         else:
-            self.lcs = [Lightcurve(time, data, err)]
+            self.lcs = [Lightcurve(time, data, err, cfg=self.cfg)]
         self.freqs = FrequencyContainer()
         self.output_manager = OutputManager(cfg=self.cfg)
         self.optimizer = Optimizer(cfg = self.cfg)
@@ -159,10 +159,10 @@ class PyWhitener:
 
         # Final Stage, make a new light curve and append it to the lightcurves list
         if self.cfg["autopw"]["new_lc_generation_method"] == "mf":
-            self.lcs.append(Lightcurve(self.lcs[0].time, self.lcs[0].data - mf_mod, err = self.lcs[0].err))
+            self.lcs.append(Lightcurve(self.lcs[0].time, self.lcs[0].data - mf_mod, err = self.lcs[0].err, cfg=self.cfg))
             return 0
         elif self.cfg["autopw"]["new_lc_generation_method"] == "sf":
-            self.lcs.append(Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err))
+            self.lcs.append(Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err, cfg=self.cfg))
             return 0
         return 2
 
