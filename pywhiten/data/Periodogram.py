@@ -234,7 +234,7 @@ class Periodogram:
         p, pcov = curve_fit(f=n_model_poly, xdata=log10_lsfreq, ydata=log10_lsamp, p0=p0)
         self.log_polypar = p
 
-    def sig_poly(self, center_val_freq: Union[float, np.ndarray], freq_amp: Union[float, np.ndarray]):
+    def sig_poly(self, center_val_freq: float, freq_amp: float):
         """
         Find the significance of a periodic component model by comparing its amplitude against a low-order polynomial
         fit to the log-log residual periodogram. Conducts an order-5 polynomial fit if a polynomial fit hasn't yet
@@ -279,8 +279,7 @@ class Periodogram:
         model_at_val = self.eval_slf_model(center_val_freq)
         return freq_amp / model_at_val
 
-    def select_peak(self, method: str = "highest", min_prov_sig: float = 4.0, mask: np.ndarray = None,
-                    cutoff: int = 50):
+    def select_peak(self, method: str = "highest", min_prov_sig: float = 4.0, mask: np.ndarray = None):
         """
         Determines a frequency-amplitude pair suitable for a pre-whitening iteration. Note: 'avg' method currently not
         implemented and just returns highest.
@@ -320,7 +319,7 @@ class Periodogram:
             # then use this to make a mask to pass to highest_ampl
             working_mask *= self.sig_poly(self.lsfreq, self.lsamp) > min_prov_sig
         else:
-            raise InvalidMethodError(f"method={method} in select_peak not in the allowable options: highest, slf,"
+            raise ValueError(f"method={method} in select_peak not in the allowable options: highest, slf,"
                                      f"poly, avg")
 
         if (~working_mask).all():  # this condition checks if the mask contains all false values
@@ -358,8 +357,7 @@ class Periodogram:
         pl.clf()
 
 
-class InvalidMethodError(Exception):
-    pass
+
 
 
 class AverageRadiusTooNarrow(Exception):
