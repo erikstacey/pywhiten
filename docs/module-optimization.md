@@ -39,6 +39,8 @@ Args:
 
 * ```dict cfg``` | A configuration dictionary.
 
+___
+
 #### ```single_frequency_optimization(x: numpy.array, data: numpy.array, err: numpy.array, f0: float, a0: float, p0: float)```
 
 Determines optimized parameters for a fit of a sinusoidal model to an x-y dataset.
@@ -59,6 +61,8 @@ Returns:
 * ```float``` | The optimized model phase
 * ```numpy.array``` | The optimized single-frequency model evaluated at all values of ```x```
 
+___
+
 #### ```multi_frequency_optimization(x: numpy.array, data: numpy.array, err: numpy.array, freqs: list)```
 
 Determines the optimized parameters for a fit of a composite sinusoidal model to an x-y dataset, and updates parameters in place. Sets the ```c_zp``` attribute to the optimized value when the fit is complete as well.
@@ -73,3 +77,5 @@ Args:
 Returns:
 
 * ```numpy.array``` | The optimized multi-frequency model evaluated at all values of ```x```
+
+___

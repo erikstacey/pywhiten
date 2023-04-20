@@ -32,7 +32,7 @@ A class which provides a complete description of a single-frequency variability 
 
 Constructor. Sets initial values for attributes.
 
-Args:
+**Args:**
 
 * ```float f``` | initial frequency
 * ```float a``` | initial amplitude
@@ -42,29 +42,33 @@ Args:
 * ```n (int) = None``` | index label
 
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```update(f : float, a : float, p : float)```
 
 Updates f, a, and p parameters with the specified values.
 
-Args:
+**Args:**
 
 * ```float f``` | New frequency
 * ```float a``` | New amplitude
 * ```float p``` | New phase
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```get_parameters():```
 
 Getter for the frequency, amplitude, and phase.
 
-Returns:
+**Returns:**
 
 * ```float``` current frequency
 * ```float``` current amplitude
@@ -74,29 +78,35 @@ Returns:
 
 Adjusts the amplitude and phase parameters such that the amplitude is positive and the phase is within (0, 1) without affecting the model itself.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```evaluate_model(x:float)```
 
 Evaluates the model at x and returns the value. If a numpy array is provided, an array of evaluated values is returned.
 
-Args:
+**Args:**
 
 * ```float x``` | x value to evaluate model at.
 
-Returns:
+**Returns:**
 
 * ```float``` The value of the model at the specified x value.
+
+___
 
 #### ```prettyprint()```
 
 Prints this frequency's parameters to console.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 ## ```class FrequencyContainer```
 
@@ -117,67 +127,79 @@ Constructor which sets the initial flist to ```Frequency``` objects specified in
 
 Getter for the list of frequencies.
 
-Returns:
+**Returns:**
 
 * ```list``` a list of ```Frequency``` objects
+
+___
 
 #### ```mf_model(time:Union[float, numpy.array], zp:float=0)```
 
 Evaluates a summed model of all ```Frequency``` models contained at the value(s) specified in ```time```.
 
-Args:
+**Args:**
 
 * ```time``` | either a float or an array specifying the values at which to evaluate the model
 * ```float zp``` | A constant value to add to model.
 
-Returns:
+**Returns:**
 
 * Evaluated model. Same data type as the argument ```time```.
+
+___
 
 #### ```get_last_frequency()```
 
 Returns the ```Frequency``` object which was added most recently.
 
-Returns:
+**Returns:**
 
 * ```Frequency``` | The last frequency in flist.
+
+___
 
 #### ```add_frequency(freq:Frequency)```
 
 Adds a frequency to the list.
 
-Args:
+**Args:**
 
 * ```Frequency freq``` | The frequency to add.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```compute_significances(residual_periodogram:Periodogram, eval: tuple)```
 
 Computes significances for stored frequencies and stores them in class attributes for each frequency. Computes according to 3 methods and stores the results in separate class attributes by default.
 
-Args:
+**Args:**
 
 * ```Periodogram residual_periodogram``` | A periodogram, assumed to consist of only noise, to use in evaluating the signal to noise ratios of each ```Frequency``` object model. Typically, when conducting pre-whitening, the analyzer removes all frequencies reasonably thought to be real and identifiable in the data then uses the residual periodogram to evaluate their confidence in their results.
 * ```tuple eval``` | A tuple containing any or all of the strings ```"slf"```, ```"box"```, ```"poly"```, which specifies which methods to use when evaluating the significance.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```compute_parameter_uncertainties(residual_light_curve:Lightcurve```
 
 Computes parameter uncertainties for the frequencies, amplitudes, and phases of each ```Frequency``` object contained using the modified Montgomery & O'donogue (1999) model.
 
-Args:
+**Args:**
 
 * ```Lightcurve residual_light_curve``` | The residual light curve from the analysis, assumed to consist of only noise.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 ## ```class Lightcurve```
 
@@ -196,58 +218,70 @@ A class which stores a set of time series data and provides methods for operatin
 
 Constructor for the Lightcurve class. Sets attributes and builds a periodogram for the data.
 
-Args:
+**Args:**
 
 * ```numpy.array time``` | Sets ```time```
 * ```numpy.array data``` | Sets ```data```
 * ```numpy.array err``` | Optional. Sets ```err```, otherwise ```err``` is ```None```
 * ```dict cfg``` | Optional. Config dictionary passthrough to its child periodogram.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```unpack()```
 
 Gets the time, data, and err arrays.
 
-Returns:
+**Returns:**
 
 * ```numpy.array``` | Time array
 * ```numpy.array``` | Data array
 * ```numpy.array``` | err array
 
+___
+
 #### ```measure_N_eff()```
 
 Measures the number of sign changes in the light curve. Intended for use with differential light curves (and is not particularly useful otherwise).
 
-Returns:
+**Returns:**
 
 * ```int``` The number of sign changes.
+
+___
 
 #### ```std()```
 
 Returns the standard deviation of the data axis of the light curve.
 
-Returns:
+**Returns:**
 
 * ```float``` | Standard deviation of the light curve
+
+___
 
 #### ```t_span()```
 
 Returns the difference between the maximum and minimum time value - the time span of the light curve.
 
-Returns:
+**Returns:**
 
 * ```float``` | Time span of light curve
+
+___
 
 #### ```debug_plot()```
 
 Plots the light curve and shows it in a rudimentary plot. Intended for debugging.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 ## Periodogram
 
@@ -270,7 +304,7 @@ A class storing a Lomb-Scargle periodogram.
 
 Constructor for the periodogram. Takes the light curve and some parameters, and computes an appropriate amplitude-spectrum periodogram.
 
-Args:
+**Args:**
 
 * ```numpy.array time``` | Time series time axis
 * ```numpy.array data``` | Time series data axis
@@ -279,146 +313,170 @@ Args:
 * ```int pts_per_res``` | Optional. Only used if lsfreq is set to ```"auto"```. The number of discrete points to place in the frequency grid per resolution element. The resolution element is taken to be 1.5/deltaT, where deltaT is the time baseline of the light curve.
 * ```dict cfg``` | Optional. Allows the configuration dictionary to be specified directly.
 
+___
+
 #### ```highest_ampl(excl_mask: np.array)```
 
 Selects the highest peak in the periodogram, and returns its frequency and amplitude.
 
-Args:
+**Args:**
 
 * ```numpy.array excl_mask```: A boolean mask of the same length of lsfreq and lsamp, which is used to exclude points from selection. If the mask value is True, it can be selected. Otherwise, it cannot.
 
-Returns:
+**Returns:**
 
 * ```float``` | Frequency value of the highest peak
 * ```float``` | Amplitude value of the highest peak
+
+___
 
 #### ```find_troughs(center:float)```
 
 Finds the indices corresponding to local minima on either side of the specified value.
 
-Args:
+**Args:**
 
 * ```float center``` | A center value in frequency to search around
 
-Returns:
+**Returns:**
 
 * ```int``` | The index of the leftward local minimum
 * ```int``` | The index of the rightward local minimum
+
+___
 
 #### ```find_index_of_freq(t:float)```
 
 Finds the index of lsfreq holding the closest frequency to ```t```.
 
-Args:
+**Args:**
 
 * ```float t``` | A frequency to search for
 
-Returns:
+**Returns:**
 
 * ```int``` | The index of the closest value in lsfreq
+
+___
 
 #### ```peak_sig_box(center_val_freq : float, freq_amp : float, bin_r : float)```
 
 Gets the significance of a peak by considering the average periodogram value around the peak. Should NOT be used to measure significance in a residual periodogram where the peak has already been extracted (use sig_box() instead)
 
-Args:
+**Args:**
 
 * ```float center_val_freq``` | Peak frequency value
 * ```float freq_amp``` | Peak amplitude value
 * ```float bin_r``` | The radius around which to search, in equivalent units to lsfreq.
 
-Returns:
+**Returns:**
 
 * ```float``` | The evaluated significance
 
-Raises:
+**Raises**:
 
 * ```AverageRadiusTooNarrow``` | The average radius is less than the radius of the peak itself. As this function finds the edges of the peak and excludes values within the peak from the box average, this leads to averaging an empty list.
+
+___
 
 #### ```sig_box(center_val_freq : float, freq_amp : float, bin_r : float)```
 
 Find the significance of a periodic component model by comparing its amplitude against the average residual
 periodogram near its frequency.
 
-Args:
+**Args:**
 
 * ```float center_val_freq``` | Model frequency value
 * ```float freq_amp``` | Model amplitude value
 * ```float bin_r``` | The radius around which to search, in equivalent units to lsfreq.
 
-Returns:
+**Returns:**
 
 * ```float``` | The evaluated significance for the periodic model
+
+___
 
 #### ```fit_lopoly(poly_order : int)```
 
 Fits the periodogram with a polynomial in log-log space and stores the coefficients in the attribute log_polypar.
 
-Args:
+**Args:**
 
 * ```int poly_order``` | The order of polynomial to fit
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```sig_poly(center_val_freq:float, freq_amp:float)```
 
 Finds the significance of a periodic component model by performing a low-order polynomial fit in log-log space.
 
-Args:
+**Args:**
 
 * ```float center_val_freq``` | Model frequency value
 * ```float freq_amp``` | Model amplitude value
 
-Returns:
+**Returns:**
 
 * ```float``` | The evaluated significance for the periodic model
+
+___
 
 #### ```fit_slf()```
 
 Fits the periodogram with a stochastic low-frequency variability model, and stores the paramters in ```slf_p```. Also populates ```slf_p_err``` with parameter uncertainties.
 
-Returns:
+**Returns:**
 
 * ```None```
+
+___
 
 #### ```sig_slf(center_val_freq:float, freq_amp:float)```
 
 Finds the significance of a periodic component model by comparing its amplitude against an SLF noise fit.
 
-Args:
+**Args:**
 
 * ```float center_val_freq``` | Model frequency value
 * ```float freq_amp``` | Model amplitude value
 
-Returns:
+**Returns:**
 
 * ```float``` | The evaluated significance for the periodic model
+
+___
 
 #### ```select_peak(method : str, min_prov_sig : float, mask : np.array)```
 
 Determines a frequency-amplitude pair from the periodogram. This can be achieved through a few different methods, the simplest is when ```method="highest"```, which simply selects the highest value in amplitude from the periodogram and returns it along with its frequency. This function is used to select candidate frequency/amplitude pairs for pre-whitening.
 
-Args:
+**Args:**
 
 * ```string method``` | Must be one of ```["highest", "slf", "poly"]```, which sets which of the sig_x functions to use to evaluate the provisional significance of candidate peaks. Note: ```"poly"``` is untested in the current version, and likely to be deprecated if this package is further developed in the future.
 * ```float min_prov_sig``` | The minimum provisional significance criterion to accept a candidate frequency-amplitude pair. If ```method``` is ```"slf"``` or ```"poly"```, a noise model is computed for the entire periodogram and then lsamp values below the noise model multiplied by ```min_prov_sig``` are indicated in a boolean mask. That mask is then used as an exclusion mask when selecting the highest peak by amplitude.
 * ```numpy.array``` | A boolean mask used to exclude periodogram points from selection.
 
-Returns:
+**Returns:**
 
 * ```float``` | The peak frequency. ```None``` if no peak could be identified.
 * ```float``` | The peak amplitude. ```None``` if no peak could be identified.
+
+___
 
 #### ```eval_slf_model(x: float)```
 
 Performs an SLF fit if one hasn't been performed already, and evaluates the SLF model at the x value provided.
 
-Args:
+**Args:**
 
 * ```float x```
 
-Returns:
+**Returns:**
 
-* ```float``` | SLF model evaluated at ```x```.
+* ```float``` | SLF model evaluated at ```x```
+
+___
