@@ -4,7 +4,7 @@ A flexible python package for conducting Lomb-Scargle-based pre-whitening of tim
 
 Written by [Erik Stacey](https://www.erikstacey.com/)
 
-Updated 5 April 2023.
+Updated 19 April 2023.
 
 # Installation
 
@@ -21,7 +21,7 @@ pip install .
 
 
 # Documentation
-The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section. Please note this documentation is currently under construction, however the [Getting Started](https://pywhiten.readthedocs.io/en/latest/getting-started/) and [Configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) articles are complete.
+The general documentation is available [here](https://pywhiten.readthedocs.io/en/latest/), and a getting started guide is available [here](https://pywhiten.readthedocs.io/en/latest/getting-started) or in the next section.
 # Getting Started
 Pywhiten was designed to be easy to get up and running quickly out of the box, so let us walk through a tutorial example.
 ## Setting up a tutorial directory

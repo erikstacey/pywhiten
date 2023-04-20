@@ -456,7 +456,7 @@ Determines a frequency-amplitude pair from the periodogram. This can be achieved
 
 **Args:**
 
-* ```string method``` | Must be one of ```["highest", "slf", "poly"]```, which sets which of the sig_x functions to use to evaluate the provisional significance of candidate peaks. Note: ```"poly"``` is untested in the current version, and likely to be deprecated if this package is further developed in the future.
+* ```string method``` | Must be one of ```["highest", "slf", "poly"]```, which sets which of the sig_x functions to use to evaluate the provisional significance of candidate peaks. Note: ```"poly"``` is untested in the current version, and likely to be deprecated if this package is further developed in the future. ```"highest"``` ignores the provisional significance criterion and simple selects the highest amplitude in the periodogram.
 * ```float min_prov_sig``` | The minimum provisional significance criterion to accept a candidate frequency-amplitude pair. If ```method``` is ```"slf"``` or ```"poly"```, a noise model is computed for the entire periodogram and then lsamp values below the noise model multiplied by ```min_prov_sig``` are indicated in a boolean mask. That mask is then used as an exclusion mask when selecting the highest peak by amplitude.
 * ```numpy.array``` | A boolean mask used to exclude periodogram points from selection.
 

@@ -17,7 +17,7 @@ This module stores classes and functions which are used for performing mathemati
 
 * ```slf_noise(x:np.array, *params) -> np.array``` | The Bowman et al. (2019) SLF variability model. ```*params``` must be of the form ```[x0, alpha_0, gamma, Cw]```.
 
-## Optimizer
+## ```class Optimizer```
 
 A class which handles chi-squared minimization of single-frequency and multi-frequency sinusoidal models.
 

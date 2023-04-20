@@ -12,7 +12,7 @@ Some utility functions are contained here:
 
 *```format_output(n: float, e: float, npts: int) -> string``` | Taking a nominal measurement ```n``` and its error ```e```, converts it to a string expressing the measurement of the form ```1.23(1)```. ```npts``` indicates the number of digits of the uncertainty to retain (e.g. ```npts=2``` -> ```1.234(12)```).
 
-## OutputManager
+## ```class OutputManager```
 
 This class handles saving plots and data for the pre-whitening process.
 
