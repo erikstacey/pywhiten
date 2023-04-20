@@ -35,7 +35,7 @@ A class which handles chi-squared minimization of single-frequency and multi-fre
 
 Constructor for this object. Requires a configuration dictionary, and sets up the fitting functions.
 
-Args:
+**Args:**
 
 * ```dict cfg``` | A configuration dictionary.
 
@@ -45,7 +45,7 @@ ___
 
 Determines optimized parameters for a fit of a sinusoidal model to an x-y dataset.
 
-Args:
+**Args:**
 
 * ```numpy.array x``` | x-axis of data to be fit
 * ```numpy.array data``` | y-axis of data to be fit
@@ -54,7 +54,7 @@ Args:
 * ```float a0``` | An initial guess for the model amplitude
 * ```float p0``` | An initial guess for the model phase
 
-Returns:
+**Returns:**
 
 * ```float``` | The optimized model frequency
 * ```float``` | The optimized model amplitude
@@ -67,14 +67,14 @@ ___
 
 Determines the optimized parameters for a fit of a composite sinusoidal model to an x-y dataset, and updates parameters in place. Sets the ```c_zp``` attribute to the optimized value when the fit is complete as well.
 
-Args:
+**Args:**
 
 * ```numpy.array x``` | x-axis of data to be fit
 * ```numpy.array data``` | y-axis of data to be fit
 * ```numpy.array err``` | y-axis weights of data to be fit
 * ```list freqs``` | A list of ```pywhiten.data.Frequency``` objects. The values of ```f```, ```a```, and ```p``` for these objects are used as the initial guesses for the fit. When the optimization is complete, the ```Frequency``` object parameters are updated in-place.
 
-Returns:
+**Returns:**
 
 * ```numpy.array``` | The optimized multi-frequency model evaluated at all values of ```x```
 
