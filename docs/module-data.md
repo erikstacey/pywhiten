@@ -4,7 +4,7 @@ The data module encapsulates several classes which are useful for storing and ma
 Results of a frequency analysis are stored as objects of class Frequency, in a FrequencyContainer object. Lightcurve and Periodogram
 classes provide the ability to store a time series and its pseudo-power spectrum.
 
-## Frequency
+## ```class Frequency```
 An object a complete description of a single-frequency variability model.
 ### Attributes:
 * ```float f``` | Frequency parameter. 
@@ -72,4 +72,5 @@ Prints this frequency's parameters to console.
 Returns:
 * ```None```
 
+## ```class FrequencyContainer```
 
