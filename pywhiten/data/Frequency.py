@@ -57,7 +57,7 @@ class Frequency:
     n = None
     model_function = None
 
-    def __init__(self, f:float, a:float, p:float, t0:float, model_function=sin_model, n:Union[int, None]=None):
+    def __init__(self, f:float, a:float, p:float, t0:float=0, model_function=sin_model, n:Union[int, None]=None):
         """
 
         Args:

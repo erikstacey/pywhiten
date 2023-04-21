@@ -21,32 +21,16 @@ Variables:
     default_cfg (dict): A dictionary storing the default configuration
     pkg_path (string): A string storing the local path to the package
 """
-import tomli
-import os
-
-pkg_path = os.path.dirname(os.path.abspath(__file__))
-default_cfg_path = os.path.join(pkg_path, 'cfg', 'default.toml')
-
-with open(default_cfg_path, "rb") as f:
-    default_cfg = tomli.load(f)
-
-from pywhiten.PyWhitener import PyWhitener
+import pywhiten.cfg
 import pywhiten.data
 import pywhiten.pwio
 import pywhiten.optimization
+from pywhiten.PyWhitener import PyWhitener
 
-def make_config_file(path="./default.toml"):
-    import shutil
-    """
-    Copies the default config file to somewhere (typically) outside the package files, so it can be edited by the user.
-    Args:
-        path (str): Path to copy the default configuration to
 
-    Returns:
 
-    """
-    shutil.copyfile(default_cfg_path, path)
-    print(f"[pywhiten] Made a copy of default configuration file at {path}!")
+
+
 
 
 

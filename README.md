@@ -192,5 +192,11 @@ may preclude its suitability for some applications:
 
 
 
+## Change Log:
 
+* 1.1.0 (April 21, 2023)
+   * Fixed major bug with installion scripts while using pip where submodules would not be properly installed.
+   * Moved the default configuration loading and access to new module ```cfg```. Default configuration can now be accessed through ```pywhiten.cfg.default_cfg```.
+* 1.0.3 (April 5, 2023)
+   * First non-internal release
 

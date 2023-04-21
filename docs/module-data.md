@@ -37,7 +37,7 @@ Constructor. Sets initial values for attributes.
 * ```float f``` | initial frequency
 * ```float a``` | initial amplitude
 * ```float p``` | initial phase
-* ```float t0``` | reference time for phase
+* ```float t0``` | Optional. Default 0. Reference time for phase
 * ```function model_function = sin_model``` | A model function. This will typically be the model used to opimize the f, a, p parameters. This is required to fully specify the meaning of f, a, p, and t0. Must be of the form f(x, f, a, p). Defaults to sin model, as with anything else that utilizes a model of this form.
 * ```n (int) = None``` | index label
 

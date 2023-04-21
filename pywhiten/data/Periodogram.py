@@ -37,7 +37,7 @@ class Periodogram:
 
     def __init__(self, time: np.ndarray, data: np.ndarray, lsfreq: Union[str, np.ndarray] = "auto",
                  fbounds = None,
-                 pts_per_res: int = pywhiten.default_cfg["periodograms"]["points_per_resolution_element"],
+                 pts_per_res: int = pywhiten.cfg.default_cfg["periodograms"]["points_per_resolution_element"],
                  cfg=None):
         """
         Constructor for Periodogram class
@@ -57,7 +57,7 @@ class Periodogram:
         if cfg is not None:
             self.cfg = cfg
         else:
-            self.cfg = pywhiten.default_cfg
+            self.cfg = pywhiten.cfg.default_cfg
         # frequencies within this value are indistinguishable in this type of analysis
         self.p_resolution = 1.5 / (max(time) - min(time))
         # approximate nyquist frequency
@@ -218,7 +218,7 @@ class Periodogram:
         total_avg_region = self.lsamp[lower_i_freq:upper_i_freq]
         return freq_amp / np.mean(total_avg_region)
 
-    def fit_lopoly(self, poly_order: int = pywhiten.default_cfg["periodograms"]["polyfit_order"]):
+    def fit_lopoly(self, poly_order: int = pywhiten.cfg.default_cfg["periodograms"]["polyfit_order"]):
         """
         Fits the periodogram with a polynomial in log-log space and stores the coefficients in the
         attribute log_polypar

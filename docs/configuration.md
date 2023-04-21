@@ -5,13 +5,20 @@ Pywhiten, and particularly its auto-prewhitening functionality, is highly config
 The path to the package can be retrieved in the following package variable:
 ```
 import pywhiten
-print(pywhiten.pkg_path)
+print(pywhiten.cfg.pkg_path)
+```
+
+and it's configuration dicationary can be retrieved from
+
+```
+import pywhiten
+default_cfg = pywhiten.cfg.default_cfg
 ```
 
 Perhaps more useful, a copy of the default configuration file can be made at a user specified location as follows:
 ```
 import pywhiten
-pywhiten.make_config_file(str:path)
+pywhiten.cfg.make_config_file(str:path)
 ```
 If the user doesn't specify a path (calls the function with no arguments), the default configuration copy is made at `./default.toml`.
 
