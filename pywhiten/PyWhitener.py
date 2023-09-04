@@ -42,7 +42,7 @@ class PyWhitener:
         # using this method to load the cfg maintains backwards compatibility with python 3.7 in the least painful form
         # load default cfg, then overwrite with config file specified by cfg
         pkg_path = pywhiten.pkg_path
-        default_config = pkg_path + "/cfg/default.toml"
+        default_config = pkg_path + "/default.toml"
         with open(default_config, "rb") as f:
             self.cfg = tomli.load(f)
 
