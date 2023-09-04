@@ -21,7 +21,7 @@ Variables:
     default_cfg (dict): A dictionary storing the default configuration
     pkg_path (string): A string storing the local path to the package
 """
-from pywhiten.cfg import default_cfg, default_cfg_path, make_config_file, pkg_path
+from pywhiten.cfg import *
 import pywhiten.data
 import pywhiten.pwio
 import pywhiten.optimization
