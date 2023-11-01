@@ -41,21 +41,20 @@ class PyWhitener:
         """
         # using this method to load the cfg maintains backwards compatibility with python 3.7 in the least painful form
         # load default cfg, then overwrite with config file specified by cfg
-        pkg_path = pywhiten.pkg_path
-        default_config = pkg_path + "/cfg/default.toml"
+        default_config = pywhiten.cfg.default_cfg_path
         with open(default_config, "rb") as f:
             self.cfg = tomli.load(f)
 
         if cfg_file != "default" and type(cfg_file) == str:
             # if specified cfg file is in current directory, use that
-            if os.path.exists(f"{os.getcwd()}/+{cfg_file}"):
-                with open(f"{os.getcwd()}/+{cfg_file}", "rb") as f:
+            if os.path.exists(os.path.join(os.getcwd(), cfg_file)):
+                with open(os.path.join(os.getcwd(), cfg_file), "rb") as f:
                     loaded_cfg = tomli.load(f)
                     self.cfg = merge_dict(self.cfg, loaded_cfg)
                 self.cfg["title"] = "Config loaded from file in working directory"
             # try to find it in the cfg directory instead
-            elif os.path.exists(f"{pkg_path}/cfg/{cfg_file}"):
-                with open(f"{pkg_path}/cfg/{cfg_file}", "rb") as f:
+            elif os.path.exists(os.path.join(pywhiten.cfg.pkg_cfg_folder_path, "cfg", cfg_file)):
+                with open(os.path.join(pywhiten.cfg.pkg_cfg_folder_path, "cfg", cfg_file), "rb") as f:
                     loaded_cfg = tomli.load(f)
                     self.cfg = merge_dict(self.cfg, loaded_cfg)
                 self.cfg["title"] = "Config loaded from file in package cfg directory"
@@ -90,6 +89,7 @@ class PyWhitener:
             method (str): A method used to identify a peak. Allowed values: ['highest', 'slf', 'poly']. Refer
                 to data.Periodogram.select_peak() for more details
             idx (int): index in lcs list to identify a peak from
+            min_prov_sig: minimum provisional significance criterion that must be satisfied for a peak to be selected.
 
         Returns:
             All values will be None if entire periodogram is excluded from selection. This can occur if using the 'slf'
@@ -189,6 +189,12 @@ class PyWhitener:
         Returns:
             Nothing
         """
+        if self.freqs.n == 0:
+            print(f"[pywhiten][WARNING] Post-prewhitening called with an empty frequencies list. If you ARE NOT using"
+                  f" auto(), check that you aren't calling post_pw prior to any pre-whitening iterations. If you ARE"
+                  f" using auto, double check your input data.")
+            return
+
         self.freqs.compute_significances(self.lcs[residual_lc_idx].periodogram)
         self.freqs.compute_parameter_uncertainties(self.lcs[residual_lc_idx])
         self.output_manager.save_freqs(freqs=self.freqs)

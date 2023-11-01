@@ -193,6 +193,9 @@ may preclude its suitability for some applications:
 
 
 ## Change Log:
+* 1.1.2 (Nov 1, 2023)
+   * Fixed a bug relating to the importing of the default configuration file when instantiating the Pywhitener class.
+   * Added a warning if post_pw is called with an empty frequency list
 
 * 1.1.1 (April 21, 2023)
    * Made t0 of Frequency object an optional parameter

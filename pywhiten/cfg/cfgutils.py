@@ -1,8 +1,8 @@
 import os
 import tomli
 
-pkg_path = os.path.dirname(os.path.abspath(__file__))
-default_cfg_path = os.path.join(pkg_path, 'default.toml')
+pkg_cfg_folder_path = os.path.dirname(os.path.abspath(__file__))
+default_cfg_path = os.path.join(pkg_cfg_folder_path, 'default.toml')
 
 with open(default_cfg_path, "rb") as f:
     default_cfg = tomli.load(f)
