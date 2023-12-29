@@ -189,8 +189,9 @@ may preclude its suitability for some applications:
    1) New frequencies are not selected within 1.5/T of existing frequencies, where T is the total time baseline of the dataset. This is the (empirical) minimum separation between two frequencies necessary to make reliable independent measurements of each of them.
    2) As the multi-frequency fit is intended as a refinement step, where parameters shouldn't change significantly, frequencies and amplitudes are bounded by default to a small region around their initial values.
 
+## Issues
 
-
+While the core functionality of this software was tested via application with my own scientific research, the conversion to a Python package occurred after this was complete and shortly after I left the field of astronomy. If you run into any bugs with the software, but particularly related to the installation of the package, please open an issue or email me directly at erik@erikstacey.com. Your diligence is much appreciated!
 
 ## Change Log:
 * 1.1.2 (Nov 1, 2023)
