@@ -4,7 +4,7 @@ A flexible python package for conducting Lomb-Scargle-based pre-whitening of tim
 
 Written by [Erik Stacey](https://www.erikstacey.com/)
 
-Updated 19 April 2023.
+Updated 1 Nov 2023.
 
 # Installation
 
