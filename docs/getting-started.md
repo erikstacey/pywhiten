@@ -27,7 +27,7 @@ vim example.py
 ```
 Now, writing in our example script, we'll load our time series data into three arrays from the example file:
 ```
-import numpy
+import numpy as np
 
 time, data, err = np.loadtxt("HD47129_thresh9_lc.txt", unpack=True)
 ```

@@ -5,7 +5,7 @@ Pywhiten, and particularly its auto-prewhitening functionality, is highly config
 The path to the package can be retrieved in the following package variable:
 ```
 import pywhiten
-print(pywhiten.cfg.pkg_path)
+print(pywhiten.cfg.pkg_cfg_folder_path)
 ```
 
 and it's configuration dicationary can be retrieved from
