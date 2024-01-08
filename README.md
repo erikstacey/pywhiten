@@ -4,7 +4,7 @@ A flexible python package for conducting Lomb-Scargle-based pre-whitening of tim
 
 Written by [Erik Stacey](https://www.erikstacey.com/)
 
-Updated 1 Nov 2023.
+Updated 8 Jan 2024.
 
 # Installation
 
@@ -194,6 +194,8 @@ may preclude its suitability for some applications:
 While the core functionality of this software was tested via application with my own scientific research, the conversion to a Python package occurred after this was complete and shortly after I left the field of astronomy. If you run into any bugs with the software, but particularly related to the installation of the package, please open an issue or email me directly at erik@erikstacey.com. Your diligence is much appreciated!
 
 ## Change Log:
+* 1.1.3 (Jan 8, 2024)
+   * Changed name of auxiliary folder in default configuration 
 * 1.1.2 (Nov 1, 2023)
    * Fixed a bug relating to the importing of the default configuration file when instantiating the Pywhitener class.
    * Added a warning if post_pw is called with an empty frequency list

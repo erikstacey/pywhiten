@@ -63,7 +63,7 @@ title = "pywhiten default configuration"
     lcs_sf= "/sf"
     lcs_mf= "/mf"
     lcs_data= "/data"
-    auxiliary= "/aux"
+    auxiliary= "/pw_aux"
     [output.debug]
         # prints debug messages
         print_debug_messages = false
