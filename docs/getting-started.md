@@ -68,6 +68,13 @@ This will identify a single frequency. You can run this ten times to get ten fre
 for i in range(10):
    pywhitener.it_pw()
 ```
+
+Or, if you'd like, you can manually specify the frequency/amplitude/phase hints. This will obviously skip the peak selection phase:
+```
+pywhitener.it_pw_manual(frequency = 0.5, amplitude = 12.5, phase = 0.2)
+```
+
+
 You can output this data to the pw_out directory using
 ```
 pywhitener.post_pw()

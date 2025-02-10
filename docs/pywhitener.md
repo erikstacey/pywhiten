@@ -57,6 +57,22 @@ Conducts a single pre-whitening iteration. Identifies a candidate frequency/ampl
 
 ___
 
+#### ```it_pw_manual(frequency: float, amplitude: float, phase: float)```
+Conducts a single pre-whitening iteration. Using the manually-specified frequency/amplitude/phase hints, fits a single-frequency sinusoid to the most recent light curve and includes it as a frequency,improves all parameters of all frequencies in multi-frequency fit against original light curve, and makes a new light curve ready for another iteration. A new frequency will be added to the end of ```freqs```, and a new lightcurve will be added to the end of ```lcs```. ```output_manager.save_it()``` is called as well, outputting data and plots to the output directory.
+
+**Args:**
+
+* ```string peak_selection_method``` | Optional. Sets the peak selection method. See ```id_peak``` above.
+
+**Returns:**
+
+* ```int``` | A flag.
+    * 0 if iteration succeeded
+    * 1 if peak identification failed using the specified method
+    * 2 if a new lightcurve couldn't be generated. Check autopw.new_lc_generation_method in config.
+
+___
+
 #### ```post_pw(residual_lc_idx : int)```
 Conducts some post-prewhitening tasks. Evaluates significances, computes parameter uncertainties, and saves some final data/plots.
 
