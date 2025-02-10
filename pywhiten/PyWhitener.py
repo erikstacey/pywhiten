@@ -134,11 +134,64 @@ class PyWhitener:
                 print(f"[DEBUG][pywhiten] TERMINATION CRITERION SATISFIED")
             return 1
 
+        self.add_frequency_and_optimize(candidate_frequency, candidate_amplitude, 0.5)
+
+
+
+    def it_pw_manual(self, frequency, amplitude, phase = 0.5, skip_type_check = False):
+        """
+                Conducts a single pre-whitening iteration using a manually-specified candidate frequency.
+                Fits a single-frequency sinusoid to the most recent light curve and includes it as a frequency,
+                improves all parameters of all frequencies in multi-frequency fit against original light curve, and makes a new
+                light curve ready for another iteration. All three numerical arguments CAN be provided as anything that converts to
+                a numerical type via float(). If you use numpy 64-bit floats (np.float64), the 64-bit precision is preserved.
+                Args:
+                    frequency (float): A candidate frequency
+                    amplitude (float): A candidate amplitude associate with the above frequency
+                    phase (float): a candidate phase, default 0.5
+                    skip_type_check (bool): Set this flag to skip the type check. If you do this, be prepared for a potentially
+                        unhelpful error message if something goes wrong.
+
+                Returns:
+                    int : a flag indicating whether the PW iteration succeeded
+                        0 if iteration was successful
+                        2 if a new lightcurve couldn't be generated. This probably happens if
+                            autopw.new_lc_generation_method is set incorrectly in cfg
+                """
+        if self.cfg["output"]["print_runtime_messages"]:
+            print(f"[pywhiten] ITERATION {self.freqs.n + 1} (Manually specified candidate frequency)")
+        if not skip_type_check:
+            try:
+                # try converting these values to a float
+                if isinstance(frequency, np.float64):
+                    f = frequency
+                else:
+                    f = float(frequency)
+                if isinstance(amplitude, np.float64):
+                    a = amplitude
+                else:
+                    a = float(amplitude)
+                if isinstance(phase, np.float64):
+                    p = phase
+                else:
+                    p = float(phase)
+            except ValueError:
+                raise TypeError("Provided frequency, amplitude, or phase value could not be converted to a numerical value."
+                                " Please provide a float, integer, numpy.float64.")
+        else:
+            f = frequency
+            a = amplitude
+            p = phase
+        return self.add_frequency_and_optimize(f, a, p)
+
+
+    def add_frequency_and_optimize(self, candidate_frequency, candidate_amplitude, candidate_phase):
         # Second stage, conduct a single-frequency fit
         sf_f, sf_a, sf_p, sf_model = self.optimizer.single_frequency_optimization(self.lcs[-1].time,
-                                                                         self.lcs[-1].data,
-                                                                         self.lcs[-1].err,
-                                                                         candidate_frequency, candidate_amplitude, 0.5)
+                                                                                  self.lcs[-1].data,
+                                                                                  self.lcs[-1].err,
+                                                                                  candidate_frequency,
+                                                                                  candidate_amplitude, candidate_phase)
         self.freqs.add_frequency(Frequency(f=sf_f, a=sf_a, p=sf_p, model_function=self.optimizer.sf_func,
                                            t0=self.cfg["input"]["input_t0"], n=len(self.freqs.get_flist())))
         if self.cfg["output"]["print_runtime_messages"]:
@@ -159,13 +212,13 @@ class PyWhitener:
 
         # Final Stage, make a new light curve and append it to the lightcurves list
         if self.cfg["autopw"]["new_lc_generation_method"] == "mf":
-            self.lcs.append(Lightcurve(self.lcs[0].time, self.lcs[0].data - mf_mod, err = self.lcs[0].err, cfg=self.cfg))
+            self.lcs.append(Lightcurve(self.lcs[0].time, self.lcs[0].data - mf_mod, err=self.lcs[0].err, cfg=self.cfg))
             return 0
         elif self.cfg["autopw"]["new_lc_generation_method"] == "sf":
-            self.lcs.append(Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err, cfg=self.cfg))
+            self.lcs.append(
+                Lightcurve(self.lcs[-1].time, self.lcs[-1].data - sf_model, err=self.lcs[0].err, cfg=self.cfg))
             return 0
         return 2
-
     def auto(self):
         for i in range(self.cfg["autopw"]["cutoff_iteration"]):
             success_flag = -1
