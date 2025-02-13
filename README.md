@@ -4,7 +4,7 @@ A flexible python package for conducting Lomb-Scargle-based pre-whitening of tim
 
 Written by [Erik Stacey](https://www.erikstacey.com/)
 
-Last updated 10 Feb 2025. Please note that this package is **not actively developed or maintained** at this time. You can still send me an email, but I might not have time to address your issue(s).
+Last updated 12 Feb 2025. Please note that this package is **not  generally actively developed or maintained** at this time. You can still send me an email, but I might not have time to address your issue(s).
 
 # Installation
 
@@ -200,6 +200,8 @@ may preclude its suitability for some applications:
 While the core functionality of this software was tested via application with my own scientific research, the conversion to a Python package occurred after this was complete and shortly after I left the field of astronomy. If you run into any bugs with the software, but particularly related to the installation of the package, please open an issue or email me directly at erik@erikstacey.com. Your diligence is much appreciated!
 
 ## Change Log:
+* 1.1.5 (Feb 12, 2024)
+   * Fixed a bug with setting the periodogram upper limit to "Nyquist".
 * 1.1.4 (Feb 10, 2024)
    * Added a method for skipping peak selection using a manually specified frequency/amplitude/phase hint.
 * 1.1.3 (Jan 8, 2024)

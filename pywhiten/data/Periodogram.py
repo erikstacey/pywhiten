@@ -71,7 +71,10 @@ class Periodogram:
                 ll = self.cfg["periodograms"]["lower_limit"]
                 if ll == "resolution":
                     ll = self.p_resolution
-                ul = self.cfg["periodograms"]["upper_limit"]
+                if self.cfg["periodograms"]["upper_limit"] == "nyquist":
+                    ul = self.p_approx_nyquist_f
+                else:
+                    ul = self.cfg["periodograms"]["upper_limit"]
             self.lsfreq = np.linspace(ll, ul, pts_per_res * int(abs(ll-ul)/(self.p_resolution)))
         else:
             self.lsfreq = lsfreq
