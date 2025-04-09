@@ -200,9 +200,11 @@ may preclude its suitability for some applications:
 While the core functionality of this software was tested via application with my own scientific research, the conversion to a Python package occurred after this was complete and shortly after I left the field of astronomy. If you run into any bugs with the software, but particularly related to the installation of the package, please open an issue or email me directly at erik@erikstacey.com. Your diligence is much appreciated!
 
 ## Change Log:
-* 1.1.5 (Feb 12, 2024)
+* 1.1.6 (Apr 9, 2025)
+   * Bounded x0 for SLF fits to periodograms to be positive
+* 1.1.5 (Feb 12, 2025)
    * Fixed a bug with setting the periodogram upper limit to "Nyquist".
-* 1.1.4 (Feb 10, 2024)
+* 1.1.4 (Feb 10, 2025)
    * Added a method for skipping peak selection using a manually specified frequency/amplitude/phase hint.
 * 1.1.3 (Jan 8, 2024)
    * Changed name of auxiliary folder in default configuration 
