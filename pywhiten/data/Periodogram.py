@@ -262,7 +262,8 @@ class Periodogram:
             Nothing
         """
         p0 = [0.5, np.mean(self.lsamp), 0.5, 0]
-        p, covar = curve_fit(slf_noise, xdata=self.lsfreq, ydata=self.lsamp, p0=p0)
+        p, covar = curve_fit(slf_noise, xdata=self.lsfreq, ydata=self.lsamp, p0=p0,
+                             bounds=([0, -np.inf, -np.inf, -np.inf], [np.inf, np.inf, np.inf, np.inf]))
         self.slf_p = p
         self.slf_p_err = np.array([covar[i, i] for i in range(len(p))])
 

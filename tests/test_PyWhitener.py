@@ -16,3 +16,5 @@ def test_PyWhitener():
     test_PyWhitener.it_pw_manual(5.4, 2, 0.9)
     test_PyWhitener.it_pw()
 
+    test_PyWhitener_2 = pywhiten.PyWhitener(x, y, errors, cfg = {"periodograms": {"upper_limit": "nyquist"}})
+    
