@@ -1,6 +1,6 @@
 ![##PyWhiten](docs/img/pywhitenlogo3.png)
 
-** As of 2025-06-23, this project is archived and will no longer receive any updates. Unfortunately, I no longer have the time to dedicate to working on this software. The source code remains available to any of those who may find it useful.**
+**As of 2025-06-23, this project is archived and will no longer receive any updates. Unfortunately, I no longer have the time to dedicate to working on this software. The source code remains available to any of those who may find it useful.**
 
 
 A flexible python package for conducting Lomb-Scargle-based pre-whitening of time series data. It is distinguished from other, similar tools by a focus on automated pipeline-style analysis and a high degree of flexibility through its extensive [configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) system.
