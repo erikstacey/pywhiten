@@ -1,10 +1,11 @@
 ![##PyWhiten](docs/img/pywhitenlogo3.png)
 
+** As of 2025-06-23, this project is archived and will no longer receive any updates. Unfortunately, I no longer have the time to dedicate to working on this software. The source code is made available to any of those who may find it useful.
+
+
 A flexible python package for conducting Lomb-Scargle-based pre-whitening of time series data. It is distinguished from other, similar tools by a focus on automated pipeline-style analysis and a high degree of flexibility through its extensive [configuration](https://pywhiten.readthedocs.io/en/latest/configuration/) system.
 
-Written by [Erik Stacey](https://www.erikstacey.com/)
-
-Last updated 12 Feb 2025. Please note that this package is **not  generally actively developed or maintained** at this time. You can still send me an email, but I might not have time to address your issue(s).
+Written by Erik Stacey
 
 # Installation
 
@@ -197,7 +198,7 @@ may preclude its suitability for some applications:
 
 ## Issues
 
-While the core functionality of this software was tested via application with my own scientific research, the conversion to a Python package occurred after this was complete and shortly after I left the field of astronomy. If you run into any bugs with the software, but particularly related to the installation of the package, please open an issue or email me directly at erik@erikstacey.com. Your diligence is much appreciated!
+This software is no longer actively maintained.
 
 ## Change Log:
 * 1.1.6 (Apr 9, 2025)
